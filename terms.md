@@ -7,7 +7,9 @@ permalink: /terms/
 
 Last updated: 8 November 2026
 
-These terms are an agreement between you and the developer of Pause ("we", "us"). By using Pause you agree to them. If you don't agree, please don't use the app.
+These terms are an agreement between you and Nguyen Vu Hai Anh, an individual developer based in Ho Chi Minh City, Vietnam, who makes Pause ("we", "us"). By using Pause you agree to them. If you don't agree, please don't use the app.
+
+Apple's standard Licensed Application End User License Agreement (the "Apple EULA") is the licence for the app itself. These terms add the rules for Pause's own services: accounts, Screen Time features and Premium.
 
 ## 1. What Pause is
 
@@ -21,29 +23,30 @@ You must be 17 or older. By using Pause you confirm that you are.
 
 ## 3. Your account
 
-An account is optional. If you create one, keep your sign-in details safe; you are responsible for activity on your account. You can delete your account at any time in Settings.
+An account is optional. If you create one, keep your sign-in details safe; you are responsible for activity on your account. You can delete your account at any time in Settings. Deleting your account does not cancel an Apple subscription.
 
 ## 4. Screen Time and app blocking
 
-Pause uses Apple's Screen Time frameworks, with your permission, to show your usage and to shield the apps you choose. Apple keeps your Screen Time data on your phone; Pause cannot read it outside Apple's sealed report. Blocking depends on iOS and can be changed or stopped by you at any time in iPhone Settings. Phone, Messages, Maps and other apps iOS keeps available may stay open. We can't guarantee that every app will always be blocked, so please don't rely on Pause where safety depends on it.
+Pause uses Apple's Screen Time frameworks, with your permission, to show your usage and to shield the apps you choose. Your Screen Time reports are drawn on your phone and we don't upload them. Blocking depends on iOS, and you can change or stop it at any time in iPhone Settings. Phone, Messages, Maps and other apps that iOS keeps available may stay open. We can't guarantee that every app will always be blocked, so please don't rely on Pause where safety depends on it.
 
-## 5. Premium subscriptions
+## 5. Premium
 
-- Premium is offered as an auto-renewing subscription (weekly or yearly) or a one-time lifetime purchase, at the prices shown in the app before you buy.
+- Premium is offered as an auto-renewing subscription (weekly or yearly) or a one-time Lifetime purchase, at the prices shown in the app before you buy.
 - Payment is charged to your Apple ID at confirmation of purchase.
 - A subscription renews automatically unless it is cancelled at least 24 hours before the end of the current period. Your account is charged for renewal within 24 hours before the period ends.
-- If a free trial is offered, any unused part of the trial ends when you buy a subscription. If you don't cancel during the trial, the subscription starts and is charged when the trial ends. We send a reminder before a trial ends if notifications are on.
-- Manage or cancel in iPhone Settings › your name › Subscriptions. Deleting the app does not cancel a subscription.
+- If a free trial is offered, its length and the price you'll pay afterwards are shown before you start. Unless you cancel at least 24 hours before the trial ends, it turns into a paid subscription. Any unused part of a trial ends if you buy a different plan. If notifications are on, we send a reminder before the trial ends, but please don't rely on it alone.
+- **Lifetime** is a one-time, non-renewing purchase. It unlocks the Premium features of Pause for as long as we offer and support Pause. It does not cover separate new products or services we may launch, and it is not a promise that Pause will run forever. We won't take away features you paid for without good reason, and your consumer rights still apply.
+- Manage or cancel a subscription in iPhone Settings › your name › Subscriptions. Deleting the app does not cancel a subscription. To restore a purchase on a new phone, use Restore Purchases in the app.
 - Refunds are handled by Apple under Apple's policies.
-- Premium may be shared through Apple Family Sharing where available.
+- Premium can be shared through Apple Family Sharing, where Apple supports it.
 
 ## 6. Acceptable use
 
-Don't misuse Pause: don't try to break, reverse-engineer or overload it, access other people's data, or use it to break the law.
+Don't misuse Pause. Don't try to break, overload or get around its security, access other people's accounts or data, interfere with other users, or use it to break the law. Don't copy, decompile or reverse-engineer it, except where the law allows you to.
 
 ## 7. Our content
 
-Pause, its design, stickers, stories and text belong to us or our licensors. You may use them only to use the app for yourself.
+Pause, its design, stickers, stories and text belong to us or our licensors. Under the Apple EULA you get a personal, non-exclusive, non-transferable right to use the app on Apple devices you own or control, for your own non-commercial use.
 
 ## 8. Changes and availability
 
@@ -55,12 +58,18 @@ Pause is provided "as is". To the extent the law allows, we disclaim implied war
 
 ## 10. Apple
 
-These terms are between you and us, not Apple. Apple is not responsible for Pause or its content. Apple's Licensed Application End User License Agreement (the standard EULA) also applies, and where it conflicts with these terms in your favour, it prevails. Apple and its subsidiaries are third-party beneficiaries of these terms and may enforce them.
+These terms are between you and us, not Apple. Apple is not responsible for Pause or its content, for supporting it, or for any claims about it. Where the Apple EULA conflicts with these terms in your favour, the Apple EULA prevails. Apple and its subsidiaries are third-party beneficiaries of these terms and may enforce them.
 
-## 11. Ending
+## 11. Law and disputes
 
-You can stop using Pause at any time. We may suspend accounts that seriously break these terms.
+These terms are governed by the laws of Vietnam. If you live elsewhere, you keep the protection of the mandatory consumer laws of your country, and you can bring a claim in your local courts. Please contact us first so we can try to sort things out.
 
-## 12. Contact
+## 12. Ending
+
+You can stop using Pause at any time. We may suspend or close accounts that seriously break these terms.
+
+## 13. Contact
+
+Nguyen Vu Hai Anh, Ho Chi Minh City, Vietnam
 
 **haianh.rivulets@gmail.com**
