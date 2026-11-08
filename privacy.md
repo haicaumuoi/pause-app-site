@@ -16,7 +16,7 @@ Pause is run by Nguyen Vu Hai Anh, an individual developer based in Ho Chi Minh 
 - **We don't upload your Screen Time.** Pause uses Apple's Screen Time frameworks. Your activity reports are drawn inside Apple's protected system on your iPhone, and Pause does not send your Screen Time history, the apps you pick or your usage figures to our servers.
 - **Your moods, notes and onboarding answers stay on your iPhone.** We don't upload them.
 - **No ads, no selling, no tracking across apps.** We do not sell your data, share it for advertising, or use it to track you across other companies' apps or websites.
-- **An account is optional.** If you don't sign in, almost nothing reaches us (see "If you don't sign in" below).
+- **An account is optional.** Without one, only limited technical, crash and purchase information reaches our service providers (see "If you don't sign in" below).
 - **Usage statistics are off unless you turn them on**, and you can turn them off again at any time in Settings › Privacy.
 
 ## What stays on your iPhone
@@ -28,7 +28,7 @@ Pause is run by Nguyen Vu Hai Anh, an individual developer based in Ho Chi Minh 
 - Your sigh breaks, walks, focus sessions, streak and garden progress, and a record of what you did in the app, used on your phone to choose helpful cards and reminders.
 - Step counts used during a walk (read from Motion & Fitness on your phone).
 
-If you sign in, your language, time zone and quiet hours are also saved to your account so reminders reach you at the right time. Your other onboarding answers stay on the phone.
+If you sign in, your name, language, time zone and quiet hours are also saved to your account so reminders reach you at the right time. Your other onboarding answers stay on the phone.
 
 Deleting Pause removes the data it stores in the app. If your iPhone is backed up to iCloud or a computer, that backup may still hold a copy until it is replaced; Apple's backup settings control it. Deleting the app does not delete your account or cancel a subscription.
 
@@ -41,11 +41,10 @@ We collect the following only when you use the related feature:
 | Email address (or Apple's private relay address), the name you give, language, time zone, quiet hours | To create and secure your account and send account emails | Until you delete your account |
 | Sign-in data: hashed sign-in codes, session tokens, passkey public keys, Apple or Google account identifiers | To let you sign in safely | Until it expires, you sign out, or you delete your account |
 | Device notification token | To deliver reminders you turned on | Until it stops working, you turn notifications off, or you delete your account |
-| Usage events, such as "completed a sigh break" or "kept a streak" (never Screen Time data, moods, notes or onboarding answers) | To understand which features help, only if you turn on usage statistics | 13 months, or until you delete your account |
-| Purchase events: trial started or ended, subscribed, auto-renew turned off | To understand how Premium is used. These are sent even when usage statistics are off | 13 months, or until you delete your account |
-| Purchase records from Apple: product, transaction ID, renewal and expiry dates | To unlock Premium and handle Family Sharing, refunds and disputes | While you have Premium, then as long as needed for refunds, disputes, fraud prevention and legal duties, which can be after you delete your account |
+| Usage events, such as "completed a sigh break" or "kept a streak" (never Screen Time data, moods, notes or onboarding answers) | To understand which features help, only if you turn on usage statistics | Up to 13 months, or earlier if you delete your account |
+| Purchase and subscription records from Apple: product, transaction ID, subscription status, renewal and expiry dates, and events such as trial started, subscribed or auto-renew turned off | To verify purchases, unlock Premium, handle Family Sharing and send messages about your trial or subscription. This is needed to provide Premium, so it doesn't depend on the usage statistics setting. It reaches our analytics provider only if usage statistics are on | Until you delete your account (purchase events up to 13 months). Apple keeps its own purchase records under Apple's privacy policy |
 | A record that the App Store rating prompt was requested (never your rating) | To avoid asking too often | Until you delete your account |
-| Crash and error reports: what went wrong, the app and iOS version, and the device model (never your name, email, Screen Time data, moods or notes) | To find and fix bugs | Up to 90 days |
+| Crash and error reports: error details, the app and iOS version, the device model and limited technical identifiers | To find and fix bugs. We set error reporting up to leave out notes, moods, Screen Time data and other app content | Up to 90 days |
 | Support emails you send us | To help you | Up to 2 years after your request is resolved |
 
 We do not collect your precise location, contacts or photos, and Pause does not read Apple Health.
@@ -56,7 +55,11 @@ Like any online service, our servers see technical details whenever the app conn
 
 ## If you don't sign in
 
-Without an account, nothing about how you use Pause is uploaded. If you turned on usage statistics, events wait on your phone and are uploaded only if you later sign in; if usage statistics are off when you sign in, they are never uploaded. The only thing that reaches us is the technical information above when the app loads content, plus any support email you send.
+You can use Pause without an account. Your Screen Time data, notes, moods and wellbeing progress stay on your iPhone.
+
+When the app connects to our services, technical information is processed as described above. Crash reports may be sent to our error-reporting provider, and Apple purchase information is processed if you buy Premium.
+
+Usage statistics are never uploaded without an account. If they are on, events wait on your phone. They are uploaded only if you sign in later and usage statistics are still on at that moment; turning them off first stops those queued events from ever being uploaded.
 
 ## Who helps us run Pause
 
@@ -66,14 +69,14 @@ We use a small number of service providers who process data only on our instruct
 - **Google**: Sign in with Google, only if you choose it.
 - **Railway**: hosts our servers and database in the United States.
 - **Postmark**: sends account emails such as sign-in codes.
-- **Sentry**: receives crash and error reports from the app and our servers, without your name, email or the content you see in Pause.
+- **Sentry**: crash and error reports from the app and our servers, as described in the table above.
 - **PostHog** (servers in the EU): product analytics, only if you turn on usage statistics. We send limited feature-use events with a pseudonymous ID, without your name, email, Screen Time data, moods or notes. Events with the same ID can be linked over time to measure how features are used, and because we can match that ID to your account, this is still personal data. We don't use it for advertising or tracking across apps.
 
 We do not sell or rent personal data, and we do not share it with data brokers or advertisers.
 
 ## Where your data is processed
 
-We operate from Vietnam. Our servers are in the United States, and analytics run in the European Union. Using an account therefore means your account data is processed outside your country. We choose providers that protect data under contract and take the steps the law requires for these transfers.
+We operate from Vietnam. Our servers (Railway), account emails (Postmark) and crash reports (Sentry) are processed in the United States, and analytics (PostHog) in the European Union. Using an account therefore means your account data is processed outside your country. We choose providers that protect data under contract and take the steps the law requires for these transfers.
 
 ## Your choices and rights
 
@@ -81,7 +84,7 @@ We operate from Vietnam. Our servers are in the United States, and analytics run
 - **Notifications:** turn reminders off in Settings or in iPhone Settings.
 - **Screen Time access:** you can revoke it at any time in iPhone Settings › Screen Time.
 - **Export:** you can export your notes from Notes.
-- **Delete:** Settings › Delete account permanently deletes your account and its personal data from our systems, except purchase records we must keep (see the table above). Copies in database backups may remain for a short time until those backups expire. We delete copies held by our analytics provider within 30 days. Deleting your account does not cancel an Apple subscription; cancel it in iPhone Settings first.
+- **Delete:** Settings › Delete account permanently deletes your account and its personal data from our systems, signs you out everywhere and removes your notification tokens. Copies in database backups may remain for a short time until those backups expire. We delete copies held by our analytics provider within 30 days. Deleting your account does not cancel an Apple subscription; cancel it in iPhone Settings first.
 - Depending on where you live (for example the EU, UK, California or Vietnam), you may have rights to access, correct, delete or port your data, to withdraw consent, and to object to or restrict processing. You can also complain to your local data protection authority. Contact us at the address below. We respond within the time the law requires and aim for 30 days.
 
 ## Children

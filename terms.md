@@ -9,7 +9,7 @@ Last updated: 8 November 2026
 
 These terms are an agreement between you and Nguyen Vu Hai Anh, an individual developer based in Ho Chi Minh City, Vietnam, who makes Pause ("we", "us"). By using Pause you agree to them. If you don't agree, please don't use the app.
 
-Apple's standard Licensed Application End User License Agreement (the "Apple EULA") is the licence for the app itself. These terms add the rules for Pause's own services: accounts, Screen Time features and Premium.
+Apple's standard [Licensed Application End User License Agreement](https://www.apple.com/legal/internet-services/itunes/dev/stdeula/) (the "Apple EULA") is the licence for the app itself. These terms add the rules for Pause's own services: accounts, Screen Time features and Premium.
 
 ## 1. What Pause is
 
@@ -34,7 +34,7 @@ Pause uses Apple's Screen Time frameworks, with your permission, to show your us
 - Premium is offered as an auto-renewing subscription (weekly or yearly) or a one-time Lifetime purchase, at the prices shown in the app before you buy.
 - Payment is charged to your Apple ID at confirmation of purchase.
 - A subscription renews automatically unless it is cancelled at least 24 hours before the end of the current period. Your account is charged for renewal within 24 hours before the period ends.
-- If a free trial is offered, its length and the price you'll pay afterwards are shown before you start. Unless you cancel at least 24 hours before the trial ends, it turns into a paid subscription. Any unused part of a trial ends if you buy a different plan. If notifications are on, we send a reminder before the trial ends, but please don't rely on it alone.
+- If a free trial is offered, its length and the price you'll pay afterwards are shown before you start. Unless you cancel at least 24 hours before the trial ends, it turns into a paid subscription. Any unused part of a trial ends if you buy a different plan. If notifications are on, we may send a reminder before your trial ends. Reminders aren't guaranteed to arrive, so managing or cancelling your subscription is up to you.
 - **Lifetime** is a one-time, non-renewing purchase. It unlocks the Premium features of Pause for as long as we offer and support Pause. It does not cover separate new products or services we may launch, and it is not a promise that Pause will run forever. We may make reasonable changes to Premium features over time, but we will respect what your purchase entitles you to and your rights under consumer law.
 - Manage or cancel a subscription in iPhone Settings › your name › Subscriptions. If you cancel, Premium stays on until the end of the period you've paid for. Deleting the app does not cancel a subscription. To restore a purchase on a new phone, use Restore Purchases in the app.
 - Refunds are handled by Apple under Apple's policies.
