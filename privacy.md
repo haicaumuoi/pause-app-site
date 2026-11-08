@@ -45,6 +45,7 @@ We collect the following only when you use the related feature:
 | Purchase events: trial started or ended, subscribed, auto-renew turned off | To understand how Premium is used. These are sent even when usage statistics are off | 13 months, or until you delete your account |
 | Purchase records from Apple: product, transaction ID, renewal and expiry dates | To unlock Premium and handle Family Sharing, refunds and disputes | While you have Premium, then as long as needed for refunds, disputes, fraud prevention and legal duties, which can be after you delete your account |
 | A record that the App Store rating prompt was requested (never your rating) | To avoid asking too often | Until you delete your account |
+| Crash and error reports: what went wrong, the app and iOS version, and the device model (never your name, email, Screen Time data, moods or notes) | To find and fix bugs | Up to 90 days |
 | Support emails you send us | To help you | Up to 2 years after your request is resolved |
 
 We do not collect your precise location, contacts or photos, and Pause does not read Apple Health.
@@ -65,6 +66,7 @@ We use a small number of service providers who process data only on our instruct
 - **Google**: Sign in with Google, only if you choose it.
 - **Railway**: hosts our servers and database in the United States.
 - **Postmark**: sends account emails such as sign-in codes.
+- **Sentry**: receives crash and error reports from the app and our servers, without your name, email or the content you see in Pause.
 - **PostHog** (servers in the EU): product analytics, only if you turn on usage statistics. We send limited feature-use events with a pseudonymous ID, without your name, email, Screen Time data, moods or notes. Events with the same ID can be linked over time to measure how features are used, and because we can match that ID to your account, this is still personal data. We don't use it for advertising or tracking across apps.
 
 We do not sell or rent personal data, and we do not share it with data brokers or advertisers.
