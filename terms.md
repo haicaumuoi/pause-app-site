@@ -35,10 +35,10 @@ Pause uses Apple's Screen Time frameworks, with your permission, to show your us
 - Payment is charged to your Apple ID at confirmation of purchase.
 - A subscription renews automatically unless it is cancelled at least 24 hours before the end of the current period. Your account is charged for renewal within 24 hours before the period ends.
 - If a free trial is offered, its length and the price you'll pay afterwards are shown before you start. Unless you cancel at least 24 hours before the trial ends, it turns into a paid subscription. Any unused part of a trial ends if you buy a different plan. If notifications are on, we send a reminder before the trial ends, but please don't rely on it alone.
-- **Lifetime** is a one-time, non-renewing purchase. It unlocks the Premium features of Pause for as long as we offer and support Pause. It does not cover separate new products or services we may launch, and it is not a promise that Pause will run forever. We won't take away features you paid for without good reason, and your consumer rights still apply.
-- Manage or cancel a subscription in iPhone Settings › your name › Subscriptions. Deleting the app does not cancel a subscription. To restore a purchase on a new phone, use Restore Purchases in the app.
+- **Lifetime** is a one-time, non-renewing purchase. It unlocks the Premium features of Pause for as long as we offer and support Pause. It does not cover separate new products or services we may launch, and it is not a promise that Pause will run forever. We may make reasonable changes to Premium features over time, but we will respect what your purchase entitles you to and your rights under consumer law.
+- Manage or cancel a subscription in iPhone Settings › your name › Subscriptions. If you cancel, Premium stays on until the end of the period you've paid for. Deleting the app does not cancel a subscription. To restore a purchase on a new phone, use Restore Purchases in the app.
 - Refunds are handled by Apple under Apple's policies.
-- Premium can be shared through Apple Family Sharing, where Apple supports it.
+- Eligible Premium purchases can be shared through Apple Family Sharing where we have turned it on for that purchase and Apple makes it available.
 
 ## 6. Acceptable use
 
@@ -46,7 +46,7 @@ Don't misuse Pause. Don't try to break, overload or get around its security, acc
 
 ## 7. Our content
 
-Pause, its design, stickers, stories and text belong to us or our licensors. Under the Apple EULA you get a personal, non-exclusive, non-transferable right to use the app on Apple devices you own or control, for your own non-commercial use.
+Pause, its design, stickers, stories and text belong to us or our licensors. Your right to use the app is the licence granted under the Apple EULA.
 
 ## 8. Changes and availability
 

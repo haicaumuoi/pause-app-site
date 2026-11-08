@@ -28,6 +28,8 @@ Pause is run by Nguyen Vu Hai Anh, an individual developer based in Ho Chi Minh 
 - Your sigh breaks, walks, focus sessions, streak and garden progress, and a record of what you did in the app, used on your phone to choose helpful cards and reminders.
 - Step counts used during a walk (read from Motion & Fitness on your phone).
 
+If you sign in, your language, time zone and quiet hours are also saved to your account so reminders reach you at the right time. Your other onboarding answers stay on the phone.
+
 Deleting Pause removes the data it stores in the app. If your iPhone is backed up to iCloud or a computer, that backup may still hold a copy until it is replaced; Apple's backup settings control it. Deleting the app does not delete your account or cancel a subscription.
 
 ## What reaches our servers, and why
@@ -40,8 +42,8 @@ We collect the following only when you use the related feature:
 | Sign-in data: hashed sign-in codes, session tokens, passkey public keys, Apple or Google account identifiers | To let you sign in safely | Until it expires, you sign out, or you delete your account |
 | Device notification token | To deliver reminders you turned on | Until it stops working, you turn notifications off, or you delete your account |
 | Usage events, such as "completed a sigh break" or "kept a streak" (never Screen Time data, moods, notes or onboarding answers) | To understand which features help, only if you turn on usage statistics | 13 months, or until you delete your account |
-| Purchase events: trial started or ended, subscribed, subscription cancelled | To run Premium and send the trial reminder. These are sent even when usage statistics are off | 13 months, or until you delete your account |
-| Subscription status from Apple | To unlock Premium | While you have Premium, then as long as needed to handle refunds, disputes and legal duties |
+| Purchase events: trial started or ended, subscribed, auto-renew turned off | To understand how Premium is used. These are sent even when usage statistics are off | 13 months, or until you delete your account |
+| Purchase records from Apple: product, transaction ID, renewal and expiry dates | To unlock Premium and handle Family Sharing, refunds and disputes | While you have Premium, then as long as needed for refunds, disputes, fraud prevention and legal duties, which can be after you delete your account |
 | A record that the App Store rating prompt was requested (never your rating) | To avoid asking too often | Until you delete your account |
 | Support emails you send us | To help you | Up to 2 years after your request is resolved |
 
@@ -53,7 +55,7 @@ Like any online service, our servers see technical details whenever the app conn
 
 ## If you don't sign in
 
-Without an account, your usage events stay queued on your phone and are never uploaded. The only thing that reaches us is the technical information above when the app loads content, plus any support email you send.
+Without an account, nothing about how you use Pause is uploaded. If you turned on usage statistics, events wait on your phone and are uploaded only if you later sign in; if usage statistics are off when you sign in, they are never uploaded. The only thing that reaches us is the technical information above when the app loads content, plus any support email you send.
 
 ## Who helps us run Pause
 
@@ -63,7 +65,7 @@ We use a small number of service providers who process data only on our instruct
 - **Google**: Sign in with Google, only if you choose it.
 - **Railway**: hosts our servers and database in the United States.
 - **Postmark**: sends account emails such as sign-in codes.
-- **PostHog** (servers in the EU): product analytics, only if you turn on usage statistics. It receives a pseudonymous ID made from your account number, never your name or email, and does not build a profile of you.
+- **PostHog** (servers in the EU): product analytics, only if you turn on usage statistics. We send limited feature-use events with a pseudonymous ID, without your name, email, Screen Time data, moods or notes. Events with the same ID can be linked over time to measure how features are used, and because we can match that ID to your account, this is still personal data. We don't use it for advertising or tracking across apps.
 
 We do not sell or rent personal data, and we do not share it with data brokers or advertisers.
 
@@ -77,7 +79,7 @@ We operate from Vietnam. Our servers are in the United States, and analytics run
 - **Notifications:** turn reminders off in Settings or in iPhone Settings.
 - **Screen Time access:** you can revoke it at any time in iPhone Settings › Screen Time.
 - **Export:** you can export your notes from Notes.
-- **Delete:** Settings › Delete account deletes your account and the data on our servers. We also delete any copies held by our analytics provider within 30 days. Deleting your account does not cancel an Apple subscription; cancel it in iPhone Settings first. We may keep a minimal record of purchases where the law requires it.
+- **Delete:** Settings › Delete account permanently deletes your account and its personal data from our systems, except purchase records we must keep (see the table above). Copies in database backups may remain for a short time until those backups expire. We delete copies held by our analytics provider within 30 days. Deleting your account does not cancel an Apple subscription; cancel it in iPhone Settings first.
 - Depending on where you live (for example the EU, UK, California or Vietnam), you may have rights to access, correct, delete or port your data, to withdraw consent, and to object to or restrict processing. You can also complain to your local data protection authority. Contact us at the address below. We respond within the time the law requires and aim for 30 days.
 
 ## Children
@@ -86,7 +88,7 @@ Pause is for people aged 17 and over. Onboarding stops for anyone who says they 
 
 ## Security
 
-Data in transit is encrypted (HTTPS). Passwords are never stored; sign-in codes and tokens are stored as hashes. No method of storage is perfectly secure, but we work to protect your data and keep as little as possible. If a breach affects you, we will tell you and the authorities as the law requires.
+Data in transit is encrypted (HTTPS). Passwords are never stored; sign-in codes and long-lived sign-in tokens are stored only as hashes. No method of storage is perfectly secure, but we work to protect your data and keep as little as possible. If a breach affects you, we will tell you and the authorities as the law requires.
 
 ## Not medical advice
 
