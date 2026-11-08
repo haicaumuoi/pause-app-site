@@ -84,7 +84,7 @@ We operate from Vietnam. Our servers (Railway), account emails (Postmark) and cr
 - **Notifications:** turn reminders off in Settings or in iPhone Settings.
 - **Screen Time access:** you can revoke it at any time in iPhone Settings › Screen Time.
 - **Export:** you can export your notes from Notes.
-- **Delete:** Settings › Delete account permanently deletes your account and its personal data from our systems, signs you out everywhere and removes your notification tokens. Copies in database backups may remain for a short time until those backups expire. We delete copies held by our analytics provider within 30 days. Deleting your account does not cancel an Apple subscription; cancel it in iPhone Settings first.
+- **Delete:** Settings › Delete account permanently deletes your account and its personal data from our systems, signs you out everywhere and removes your notification tokens. This includes our copy of your purchase records. Premium is tied to your Apple ID, not your Pause account, so it keeps working after you delete your account; use Restore Purchases if it doesn't appear. Copies in database backups may remain for a short time until those backups expire. We delete copies held by our analytics provider within 30 days. Deleting your account does not cancel an Apple subscription; cancel it in iPhone Settings first.
 - Depending on where you live (for example the EU, UK, California or Vietnam), you may have rights to access, correct, delete or port your data, to withdraw consent, and to object to or restrict processing. You can also complain to your local data protection authority. Contact us at the address below. We respond within the time the law requires and aim for 30 days.
 
 ## Children
