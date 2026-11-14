@@ -1,0 +1,1309 @@
+<!doctype html>
+<html lang="en" data-pack="meadow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pause: put the phone down, gently</title>
+<meta name="description" content="Pause is a kind iPhone app for women with ADHD who lose time to their phone. It asks you for one breath before you scroll.">
+<meta property="og:title" content="Pause: put the phone down, gently">
+<meta property="og:description" content="A breath before the scroll, a streak that forgives you, and friends who cheer you on.">
+<meta property="og:image" content="https://pauseadhd.app/img/icon.png">
+<meta property="og:url" content="https://pauseadhd.app">
+<meta name="theme-color" content="#FAF7F0">
+<link rel="icon" href="img/icon.png">
+<link rel="apple-touch-icon" href="img/icon.png">
+<link rel="preload" href="fonts/Caprasimo-Regular.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="fonts/Figtree-Variable.ttf" as="font" type="font/ttf" crossorigin>
+<script>
+  // Restore the theme before first paint so the page never flashes Meadow first.
+  try { const p = localStorage.getItem('pause-pack'); if (p) document.documentElement.dataset.pack = p } catch {}
+</script>
+<style>
+@font-face{font-family:Caprasimo;src:url("fonts/Caprasimo-Regular.ttf") format("truetype");font-weight:400;font-display:swap}
+@font-face{font-family:Figtree;src:url("fonts/Figtree-Variable.ttf") format("truetype");font-weight:300 900;font-display:swap}
+/* Tokens mirror apps/ios/.../Themes (base.json + the three packs, light). */
+:root{
+  --accent:#1FBF6A; --accentText:#0B7A43; --highlight:#D8F55E; --tint:#CBF2D9; --ink:#0E1511;
+  --ink2:#26302A; --mute:#4A544E; --paper:#FAF7F0; --surface:#fff; --line:#F1EEE4; --celebrate:#FFB3C7;
+  --display:"Caprasimo",Georgia,serif; --body:"Figtree",system-ui,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1); --press:cubic-bezier(.23,1,.32,1);
+  --pw:330px; --ph:706px;
+}
+[data-pack=clay]{--accent:#C67139;--accentText:#774422;--highlight:#F2C66D;--tint:#F1DCCE;--ink:#201E1D;--ink2:#2E2A27;--mute:#5A524C}
+[data-pack=lilac]{--accent:#8B7BF7;--accentText:#534A94;--highlight:#FFD66B;--tint:#E2DEFD;--ink:#17142E;--ink2:#25213F;--mute:#55516B}
+[data-pack=tide]{--accent:#29B3C9;--accentText:#196B79;--highlight:#FFE170;--tint:#CAECF2;--ink:#0C1A1F;--ink2:#1B2B31;--mute:#4A5A60}
+*{box-sizing:border-box;margin:0}
+html{overscroll-behavior:none}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-weight:500;-webkit-font-smoothing:antialiased;overflow-x:clip;transition:background .6s,color .6s}
+img{display:block;max-width:100%}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);font-weight:400;letter-spacing:-.01em;line-height:.98;text-wrap:balance}
+p{text-wrap:pretty}
+:focus-visible{outline:3px solid var(--accentText);outline-offset:3px}
+
+/* background: the app's paper — soft glows over a faint dot grid */
+.glows{position:fixed;inset:-20vh 0;z-index:-2;will-change:transform;pointer-events:none;transition:opacity .6s;
+  background:
+    radial-gradient(circle at 88% 6%,color-mix(in srgb,var(--tint) 85%,transparent),transparent 36%),
+    radial-gradient(circle at 6% 62%,color-mix(in srgb,var(--highlight) 30%,transparent),transparent 38%),
+    radial-gradient(circle at 92% 96%,color-mix(in srgb,var(--celebrate) 28%,transparent),transparent 32%),
+    radial-gradient(color-mix(in srgb,var(--ink) 7%,transparent) 1.1px,transparent 1.2px) 0 0/20px 20px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 26px;border:2px solid var(--ink);border-radius:999px;background:var(--accent);color:var(--ink);font:800 17px/1 var(--body);text-decoration:none;box-shadow:0 4px 0 var(--ink);transition:transform .16s var(--press),box-shadow .16s var(--press),background .6s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 5px 0 var(--ink)}
+.btn:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 var(--ink)}
+.btn.dark{background:var(--ink);color:var(--paper)}
+.btn.ghost{background:var(--surface)}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+@media (max-width:900px){.cta{justify-content:center;gap:8px}.cta .btn{padding:0 16px}}
+.btn svg{width:20px;height:20px;fill:currentColor}
+
+nav{position:fixed;top:14px;left:50%;translate:-50% 0;z-index:20;width:min(1080px,calc(100% - 32px));display:flex;align-items:center;justify-content:space-between;padding:7px 7px 7px 14px;border:2px solid var(--ink);border-radius:999px;background:color-mix(in srgb,var(--surface) 78%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.logo{display:flex;align-items:center;gap:10px;font:400 25px/1 var(--display);text-decoration:none}
+.logo img{width:32px;height:32px;border-radius:9px}
+nav .btn{min-height:42px;padding:0 18px;font-size:15px;box-shadow:0 3px 0 var(--ink)}
+
+/* entrance: slow rise out of a blur, staggered by --d */
+.rv{animation:rise 1.3s var(--ease) both;animation-delay:calc(var(--d,0) * 1s)}
+@keyframes rise{from{opacity:0;translate:0 28px;scale:.96;filter:blur(8px)}}
+.w{display:inline-block;overflow:clip;overflow-clip-margin:.12em;vertical-align:top;padding-bottom:.06em}
+.w>span{display:inline-block;animation:word 1.4s var(--ease) both;animation-delay:calc(.25s + var(--i) * .09s)}
+@keyframes word{from{translate:0 105%;rotate:4deg;filter:blur(6px)}}
+/* text that plays back: words lift one after another on hover and squish when pressed; marked words get a highlighter
+   swipe, and their letters wave like a breath */
+.split .h{display:inline-block;transition:transform .55s cubic-bezier(.34,1.56,.64,1);transition-delay:calc(var(--i) * .035s)}
+.split .c{display:inline-block}
+@media (hover:hover){
+  .split:hover .h{transform:translateY(-.07em) rotate(-1.5deg)}
+  .split em:hover .c{animation:wave .9s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--c) * .06s)}
+  h1:hover .inl{transform:rotate(-16deg) scale(1.15)}
+  .btn:hover svg{rotate:-12deg}
+  .logo:hover img{transform:rotate(-14deg) scale(1.12)}
+}
+.split:active .h{transform:translateY(.03em) scale(.95);transition-duration:.16s;transition-delay:0s}
+@keyframes wave{40%{transform:translateY(-.18em) rotate(-5deg)}}
+/* a big sticker cursor, about three times the usual size, drawn by the page */
+.cur{position:fixed;left:0;top:0;width:60px;height:60px;z-index:999;pointer-events:none;opacity:0;transition:opacity .25s}
+.cur.on{opacity:1}
+.cur svg{width:100%;height:100%;overflow:visible;transform-origin:8% 6%;transition:scale .35s cubic-bezier(.34,1.56,.64,1),rotate .35s cubic-bezier(.34,1.56,.64,1)}
+.cur path{fill:var(--surface);stroke:var(--ink);stroke-width:7;stroke-linejoin:round;transition:fill .25s}
+.cur .side{fill:var(--ink)}
+.cur.hot svg{scale:1.18;rotate:-10deg}.cur.hot path:not(.side){fill:var(--highlight)}
+.cur.down svg{scale:.86}
+@media (hover:hover) and (pointer:fine){html.bigcur,html.bigcur *{cursor:none!important}}
+em.mark{background:linear-gradient(var(--highlight),var(--highlight)) 0 88%/0% .3em no-repeat;transition:background-size 1.1s var(--ease) .4s}
+em.mark.on{background-size:100% .3em}
+.inl{display:inline-block;height:.8em;width:auto;vertical-align:-.06em;margin:0 .04em;animation:inlIn 1s cubic-bezier(.34,1.56,.64,1) 1s both;transition:transform .55s cubic-bezier(.34,1.56,.64,1)}
+@keyframes inlIn{from{scale:0;rotate:-40deg}}
+.btn svg,.logo img{transition:rotate .45s cubic-bezier(.34,1.56,.64,1),transform .45s cubic-bezier(.34,1.56,.64,1)}
+footer a:not(.logo){text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px;transition:text-decoration-color .3s,color .3s}
+footer a:not(.logo):hover,footer a:not(.logo):focus-visible{text-decoration-style:wavy;text-decoration-color:var(--accent);text-decoration-thickness:2px;color:var(--ink)}
+
+/* ---------- story: one phone from the hero through the chapters ---------- */
+.story{height:340vh;position:relative}
+.stage{position:sticky;top:0;height:100svh;overflow:clip;--t:0}
+.intro{position:absolute;top:92px;left:0;right:0;text-align:center;padding:0 16px;will-change:transform,opacity,filter}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:7px 14px 7px 8px;border:2px solid var(--ink);border-radius:999px;background:var(--surface);font:700 13px/1 var(--body)}
+.chip i{width:20px;height:20px;border-radius:50%;background:var(--highlight);border:2px solid var(--ink);display:grid;place-items:center;font-style:normal;font-size:10px}
+.intro h1{font-size:clamp(44px,5.6vw,84px);margin:18px auto 0;max-width:13ch}
+@media (min-width:901px){
+  .intro{top:50%;left:max(24px,calc(50% - 560px));right:auto;width:min(520px,42vw);padding:0;text-align:left;translate:0 -50%}
+  .intro h1{margin-left:0}.intro .sub{margin-left:0}
+}
+/* the hero's highlighter swipes in only after the headline's words have risen */
+.intro h1 em{font-style:normal;color:var(--accentText);transition:color .6s,background-size 1.1s var(--ease) 1.6s}
+.intro .sub{max-width:44ch;margin:16px auto 22px;font-size:clamp(16px,1.5vw,19px);color:var(--mute);line-height:1.45}
+
+.pwrap{position:absolute;left:50%;top:50%;width:var(--pw);height:var(--ph);translate:-50% -50%;will-change:transform}
+.ptilt{width:100%;height:100%;transform-style:preserve-3d;transition:transform .9s var(--ease);animation:float 7s cubic-bezier(.45,0,.55,1) infinite}
+/* the phone lies tilted and floats in the hero; --t (0 in the hero, 1 in the chapters) stands it up to face the reader */
+@keyframes float{50%{translate:0 -16px}}
+.pshadow{position:absolute;left:12%;right:12%;bottom:-70px;height:44px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--ink) 30%,transparent),transparent);filter:blur(6px);opacity:calc(1 - var(--t) * .6);animation:shadowIn 1.4s var(--ease) 1.3s both,floatShadow 7s cubic-bezier(.45,0,.55,1) infinite;pointer-events:none}
+@keyframes shadowIn{from{filter:blur(6px) opacity(0)}to{filter:blur(6px) opacity(1)}}
+@keyframes floatShadow{50%{scale:.82;opacity:calc(.6 - var(--t) * .4)}}
+.phone{width:100%;height:100%;border:10px solid var(--ink);border-radius:52px;background:var(--paper);position:relative;overflow:hidden;box-shadow:0 40px 80px -36px color-mix(in srgb,var(--ink) 40%,transparent)}
+/* lifting the screen 2px above the body layers keeps Chrome's hit-testing right on the tilted phone; coplanar, taps on the far side missed */
+.phone{transform:translateZ(2px)}
+.p3d{width:100%;height:100%;animation:phoneIn 1.8s var(--ease) .55s both}
+/* the phone's body: thin layers stacked behind the screen in real 3D, so its edge shows on whichever side it turns */
+.slab{position:absolute;inset:0;border-radius:52px;background:color-mix(in srgb,var(--ink) calc(100% - var(--hl) * 1%),#7d8a83);transform:translateZ(calc(var(--z) * -2.2px))}
+@keyframes phoneIn{from{opacity:0;translate:0 120px;rotate:-4deg;filter:blur(10px)}}
+.phone::before{content:"";position:absolute;top:10px;left:50%;translate:-50% 0;width:90px;height:26px;border-radius:20px;background:var(--ink);z-index:3}
+.phone::after{content:"";position:absolute;inset:0;border-radius:42px;pointer-events:none;background:linear-gradient(115deg,transparent 22%,rgba(255,255,255,.32) 34%,transparent 46%) no-repeat;background-size:260% 100%;background-position:calc(40% + var(--gx,0) * 1%) 0;z-index:4}
+
+/* stickers ringing the phone; they pop away (scale, never fade) as the story starts */
+/* parallax: each sticker drifts at its own speed as it pops away, so they separate in depth */
+.stk{position:absolute;width:var(--s,150px);scale:max(0,calc(1 - var(--t) * 1.6));translate:0 calc(var(--t) * var(--pv,0px));transition:scale .1s linear;z-index:5}
+.stk>div{cursor:grab;touch-action:none;will-change:transform}
+.stk>div.held{cursor:grabbing}
+.stk canvas{display:block;width:100%;aspect-ratio:1}
+.s1{--s:170px;left:-150px;top:-20px;--pv:-150px}
+.s2{--s:160px;right:-190px;top:80px;--pv:-60px}
+.s3{--s:150px;left:-140px;bottom:70px;--pv:90px}
+.s4{--s:140px;right:-170px;bottom:-10px;--pv:170px}
+.hint{position:absolute;left:50%;bottom:-46px;translate:-50% 0;white-space:nowrap;font:700 13px/1 var(--body);color:var(--mute);scale:max(0,calc(1 - var(--t) * 3))}
+
+/* the chapter layers sit over the hero copy while hidden, so only a showing chapter may take the pointer */
+.heads,.bodies{position:absolute;top:50%;translate:0 -50%;width:calc(50vw - var(--pw) / 2 - 110px);max-width:420px;height:60vh;pointer-events:none}
+.heads{right:calc(50% + var(--pw) / 2 + 70px)}
+.bodies{left:calc(50% + var(--pw) / 2 + 70px)}
+.heads>*,.bodies>*{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;pointer-events:none}
+.heads h2{font-size:clamp(38px,4.6vw,64px)}
+.heads .w>span,.bodies .ln{animation:none;translate:0 105%;filter:blur(6px);transition:translate .9s var(--ease),filter .9s var(--ease),opacity .9s var(--ease)}
+.heads .w>span{transition-delay:calc(var(--i) * .06s)}
+.heads .w>span{opacity:0}
+.heads .on .w>span{translate:0 0;filter:none;opacity:1}
+.bodies .ln{display:block;opacity:0;translate:0 24px;transition-delay:calc(.15s + var(--i,0) * .08s)}
+.bodies .on .ln{opacity:1;translate:0 0;filter:none}
+.num{font:800 13px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--accentText);margin-bottom:16px}
+.bodies p{font-size:19px;line-height:1.5;color:var(--ink2);max-width:30ch}
+.bodies small{font-size:13px;color:var(--mute);max-width:34ch;line-height:1.45;margin-top:14px}
+
+/* phone screens */
+.strip{position:absolute;inset:0}
+/* each chapter settles in like an app screen: the old one sinks back, the new one's parts rise in turn */
+.screen{position:absolute;inset:0;padding:56px 16px 20px;display:flex;flex-direction:column;text-align:center;pointer-events:none}
+.screen>*{opacity:0;translate:0 22px;scale:.98;filter:blur(5px);transition:opacity .35s ease,translate .35s ease,scale .35s ease,filter .35s ease}
+.screen.on>*{opacity:1;translate:0 0;scale:1;filter:none;transition:opacity 1s var(--ease),translate 1.1s var(--ease),scale 1.1s var(--ease),filter 1s var(--ease);transition-delay:calc(.25s + var(--k) * .08s)}
+.phone{background:
+    radial-gradient(circle at 88% 6%,color-mix(in srgb,var(--tint) 85%,transparent),transparent 40%),
+    radial-gradient(circle at 6% 70%,color-mix(in srgb,var(--highlight) 30%,transparent),transparent 40%),
+    radial-gradient(color-mix(in srgb,var(--ink) 7%,transparent) 1px,transparent 1.1px) 0 0/14px 14px,
+    var(--paper)}
+.eyebrow{font:800 10px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.card{border:2px solid var(--ink);border-radius:22px;background:var(--surface);box-shadow:0 3px 0 var(--ink)}
+.pbtn{display:flex;align-items:center;justify-content:center;height:44px;border:2px solid var(--ink);border-radius:999px;background:var(--accent);font:800 14px/1 var(--body);box-shadow:0 3px 0 var(--ink);flex:none;transition:background .6s}
+.plink{font:700 13px/1 var(--body);color:var(--accentText);margin-top:14px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.ring{width:40px;height:40px;border-radius:50%;border:3px solid var(--accent);display:grid;place-items:center}
+.ring i{width:16px;height:16px;border:2px solid var(--ink);border-radius:5px;background:var(--highlight)}
+.pill{background:var(--ink);color:var(--paper);border-radius:999px;padding:9px 14px;font:800 12px/1 var(--body)}
+.screen.on{pointer-events:auto}
+.today{background:var(--highlight);padding:14px 14px 12px;text-align:left}
+.today .eyebrow{display:flex;justify-content:space-between;align-items:center}
+.today .eyebrow b{font-size:9px;letter-spacing:.06em;background:var(--surface);border:1.5px solid var(--ink);border-radius:999px;padding:3px 7px;color:var(--ink)}
+.stats{display:flex;gap:20px;margin:8px 0 6px}
+.stats div{display:grid}
+.stats b{font:400 34px/1 var(--display);color:var(--ink)}
+.stats b span{font:800 13px/1 var(--body);margin-left:3px}
+.stats small{font:700 11px/1.2 var(--body);color:var(--ink2);margin-top:4px}
+/* hour by hour, the chart grows in; the current hour is the dark bar */
+.bars{position:relative;display:flex;align-items:flex-end;gap:4px;height:66px;padding-top:2px;border-bottom:2px solid var(--ink)}
+/* the daily goal as a dashed line across the chart */
+.bars::before{content:"goal";position:absolute;left:0;right:0;bottom:78%;border-top:2px dashed color-mix(in srgb,var(--ink) 45%,transparent);font:800 8px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);text-align:right;padding-top:2px;z-index:1}
+.bars i{flex:1;height:calc(var(--h) * 1%);background:color-mix(in srgb,var(--accent) 75%,var(--surface));border:1.5px solid var(--ink);border-bottom:0;border-radius:5px 5px 0 0;transform-origin:bottom;scale:1 0;transition:scale .8s cubic-bezier(.34,1.56,.64,1),background .2s;transition-delay:calc(1.4s + var(--n) * .05s)}
+.bars i.now{background:var(--ink)}
+.bars i:hover{background:var(--surface)}
+.screen.on .bars i{scale:1 1}
+/* while the home-screen intro plays, the chart waits to grow until the Today screen is revealed */
+.phone:has(.demo) .bars i{transition-delay:calc(6.6s + var(--n) * .05s)}
+.daytop{display:flex;align-items:center;gap:10px}
+.daytop small{font:800 11px/1.2 var(--body);color:var(--mute);text-align:left}
+.daytop small b{display:block;font:400 17px/1 var(--display);color:var(--ink)}
+/* a small streak card fills the bottom of the Today screen */
+.strk{margin-top:12px;display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid var(--ink);border-radius:18px;background:var(--surface);box-shadow:0 3px 0 var(--ink);text-align:left}
+.strk img{width:36px;flex:none}
+.strk div{flex:1;min-width:0}
+.strk b{display:block;font:400 16px/1 var(--display);color:var(--ink)}
+.strk small{font:700 10px/1.2 var(--body);color:var(--mute)}
+.strk small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.strk span{display:flex;gap:4px;margin-top:7px}
+.strk span i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink);background:var(--accent)}
+.strk span i.fz{background:var(--tint)}.strk span i.no{background:var(--surface);border-style:dashed}
+.hours{display:flex;justify-content:space-between;font:700 9px/1 var(--body);color:var(--mute);margin-top:4px}
+.what{font:400 22px/1 var(--display);text-align:left;margin:14px 0 9px}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;height:112px;flex:none}
+.tile{border:2px solid var(--ink);border-radius:20px;padding:8px 2px;min-width:0;font:400 15px/1 var(--display);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 0 var(--ink);cursor:pointer;transition:transform .16s var(--press),box-shadow .16s var(--press)}
+.tile:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--ink)}
+.tile:active{transform:translateY(3px) scale(.97);box-shadow:0 1px 0 var(--ink)}
+.tile img{width:52px;margin:0;transition:rotate .45s cubic-bezier(.34,1.56,.64,1)}
+.tile:hover img{rotate:-10deg}
+/* the screens a tile opens, each with its own little thing to do */
+.sub .x{position:absolute;left:14px;top:48px;width:36px;height:36px;border-radius:50%;border:2px solid var(--ink);background:var(--surface);font:700 16px/1 var(--body);cursor:pointer;display:grid;place-items:center;z-index:2}
+.sub .big{margin-top:30px}
+.sub .tap{border:2px solid var(--ink);box-shadow:0 3px 0 var(--ink);cursor:pointer;width:100%;color:var(--ink)}
+.sub .tap:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.sub .orb div{transition:scale 1s cubic-bezier(.45,0,.55,1)}
+.sub .orb.go div{animation:none}
+.bcue{font:400 22px/1.1 var(--display);min-height:1.2em;margin-bottom:12px;color:var(--ink)}
+.fchips{display:flex;gap:6px;justify-content:center;margin:auto 0 14px}
+.fchips button{padding:9px 14px;border:2px solid var(--ink);border-radius:999px;background:var(--surface);font:800 13px/1 var(--body);cursor:pointer;color:var(--ink)}
+.fchips button[aria-pressed=true]{background:var(--highlight)}
+.fring{width:150px;height:150px;margin:18px auto 0;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;background:conic-gradient(var(--accent) calc(var(--left,1) * 360deg),var(--line) 0)}
+.fring div{width:114px;height:114px;border-radius:50%;border:2px solid var(--ink);background:var(--surface);display:grid;place-items:center;font:400 30px/1 var(--display);font-variant-numeric:tabular-nums}
+.wshoe{width:120px;margin:16px auto 0;transition:rotate .3s}
+.wsteps{font:400 44px/1 var(--display);margin:auto 0 4px;font-variant-numeric:tabular-nums}
+.wlabel{font:700 12px/1 var(--body);color:var(--mute);margin-bottom:14px}
+.walking .wshoe{animation:stepIt .5s ease-in-out infinite alternate}
+@keyframes stepIt{from{rotate:-8deg;translate:0 0}to{rotate:8deg;translate:0 -6px}}
+.tile:nth-child(1){background:var(--accent)}.tile:nth-child(2){background:var(--highlight)}.tile:nth-child(3){background:var(--tint)}
+.big{font-size:26px;margin:8px 0}
+.lead{font-size:13px;color:var(--mute);line-height:1.45;padding:0 6px}
+.orb{margin:auto;width:184px;height:184px;border-radius:50%;border:2px solid color-mix(in srgb,var(--accent) 55%,transparent);display:grid;place-items:center}
+.orb div{width:132px;height:132px;border-radius:50%;background:var(--tint);display:grid;place-items:center;animation:breathe 9s cubic-bezier(.45,0,.55,1) infinite}
+.orb img{width:74px}
+@keyframes breathe{0%,100%{scale:.82}30%{scale:.95}45%{scale:1.06}}
+.week{display:flex;justify-content:space-between;margin:16px 4px 6px}
+.week span{display:grid;justify-items:center;gap:6px;font:700 10px/1 var(--body);color:var(--mute)}
+.week b{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);background:var(--accent);display:grid;place-items:center}
+.week b.fz{background:var(--tint)}.week b.fz img{width:22px}
+.week b.no{background:var(--surface);border-style:dashed}
+.bar{height:10px;border-radius:9px;background:var(--line);margin:18px 0 6px;overflow:hidden}
+.bar i{display:block;height:100%;width:86%;background:var(--accent);border-radius:9px}
+.streak-hero{width:96px;margin:14px auto 0}
+.friends{display:grid;gap:8px;margin-top:14px;text-align:left}
+.friend{display:flex;align-items:center;gap:10px;padding:10px}
+.av{width:36px;height:36px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font:800 14px/1 var(--body);flex:none}
+.friend p{font-size:12px;line-height:1.35;color:var(--ink2);flex:1}
+.friend b{font-weight:800;color:var(--ink)}
+.friend img{width:30px}
+
+/* ---------- hero demo: the phone opens two apps, Pause steps in, its logo opens into the Today screen ---------- */
+.demo{position:absolute;inset:0;z-index:2;container-type:size;overflow:hidden;--o:1.5s;
+  background:linear-gradient(160deg,var(--tint),var(--paper) 70%);animation:demoOut .5s calc(var(--o) + 4.9s) forwards}
+.dgrid{position:absolute;top:24cqw;left:8cqw;right:8cqw;display:grid;grid-template-columns:repeat(4,17cqw);justify-content:space-between;row-gap:7cqw}
+.dgrid i{height:17cqw;border:2px solid var(--ink);border-radius:4.6cqw;display:grid;place-items:center;font:normal 800 8cqw/1 var(--body);color:var(--ink);box-shadow:0 .9cqw 0 var(--ink)}
+.dgrid .pa{background:var(--celebrate);animation:dpress .3s calc(var(--o) + .3s)}
+.dgrid .pb{background:var(--ink);color:var(--paper);animation:dpress .3s calc(var(--o) + 2.6s)}
+/* generic stand-ins for a photo feed and a short-video app: no real logos */
+.cam{width:9cqw;height:9cqw;border:2px solid currentColor;border-radius:2.6cqw;display:grid;place-items:center}
+.cam::after{content:"";width:3.4cqw;height:3.4cqw;border:2px solid currentColor;border-radius:50%}
+.dtap{position:absolute;width:10cqw;height:10cqw;margin:-5cqw;border-radius:50%;background:color-mix(in srgb,var(--ink) 30%,transparent);border:2px solid var(--paper);opacity:0}
+.dtap.a{left:38.83cqw;top:32.5cqw;animation:dtap .5s calc(var(--o) + .1s)}
+.dtap.b{left:61.17cqw;top:56.5cqw;animation:dtap .5s calc(var(--o) + 2.4s)}
+.dopen{position:absolute;inset:0;display:grid;place-items:center;scale:0;font:800 30cqw/1 var(--body)}
+.dopen .cam{width:30cqw;height:30cqw;border-width:4px;border-radius:8cqw}.dopen .cam::after{width:11cqw;height:11cqw;border-width:4px}
+.dopen.a{background:var(--celebrate);color:var(--ink);transform-origin:38.83cqw 32.5cqw;animation:dopenA 1.7s calc(var(--o) + .6s) var(--ease)}
+.dopen.b{background:var(--ink);color:var(--paper);transform-origin:61.17cqw 56.5cqw;animation:dopenB .45s calc(var(--o) + 2.9s) var(--ease) forwards}
+.dblk{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5cqw;background:var(--paper);opacity:0;font:400 8cqw/1 var(--display,inherit)}
+.dblk img{width:28cqw;height:28cqw;border-radius:7cqw;border:2px solid var(--ink);box-shadow:0 1.2cqw 0 var(--ink)}
+.dblk.a{animation:dblkA 1.2s calc(var(--o) + 1.2s)}
+.dblk.a img{animation:dlogo .5s calc(var(--o) + 1.2s) cubic-bezier(.34,1.56,.64,1) backwards}
+.dblk.b{animation:dblkB .3s calc(var(--o) + 3.5s) forwards}
+.dblk.b img{animation:dlogo .5s calc(var(--o) + 3.5s) cubic-bezier(.34,1.56,.64,1) backwards,dgrow .9s calc(var(--o) + 4.5s) cubic-bezier(.7,0,.3,1) forwards}
+.dblk.b span{animation:dfade .25s calc(var(--o) + 4.45s) forwards}
+@keyframes dpress{50%{scale:.86}}
+@keyframes dtap{0%{opacity:0;scale:1.8}40%{opacity:1;scale:1}100%{opacity:0;scale:.7}}
+@keyframes dopenA{0%{scale:0}25%,84%{scale:1;opacity:1}85%,100%{scale:1;opacity:0}}
+@keyframes dopenB{to{scale:1}}
+@keyframes dblkA{0%{opacity:0}22%,78%{opacity:1}100%{opacity:0}}
+@keyframes dblkB{to{opacity:1}}
+@keyframes dlogo{from{scale:.5;opacity:0}}
+@keyframes dgrow{to{scale:16;box-shadow:none}}
+@keyframes dfade{to{opacity:0}}
+@keyframes demoOut{to{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion:reduce){.demo{display:none}}
+
+/* ---------- product: three steps, drawn as small live screens in the sticker style ---------- */
+.product{padding:9vh 16px;scroll-margin-top:90px}
+.ppanel{position:relative;max-width:1180px;margin:auto;padding:72px clamp(24px,4vw,56px) 44px;border:2px solid var(--ink);border-radius:44px;box-shadow:0 6px 0 var(--ink);
+  background:radial-gradient(color-mix(in srgb,var(--ink) 8%,transparent) 1.1px,transparent 1.2px) 0 0/18px 18px,var(--tint);transition:background-color .6s}
+.product-heading{max-width:760px}
+.product h2{font-size:clamp(38px,5vw,68px);line-height:1.02}
+.product h2 em{font-style:normal;color:var(--accentText)}
+.product-heading p{margin-top:16px;max-width:46ch;font-size:19px;line-height:1.5;color:var(--ink2)}
+.ppeek{position:absolute;right:48px;top:-92px;width:170px;z-index:2}
+.ppeek canvas{display:block;width:100%;aspect-ratio:1}
+.ppeek>div{cursor:grab;touch-action:none}
+.psteps{list-style:none;padding:0;margin:48px 0 0;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,44px)}
+.pstep{position:relative;min-width:0}
+/* a dashed arrow from each card to the next */
+.pstep:not(:last-child)::after{content:"";position:absolute;top:126px;right:calc(clamp(20px,3vw,44px) * -.5 - 22px);width:44px;height:24px;z-index:3;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 24' fill='none' stroke='%230E1511' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 15C14 4 26 4 37 12' stroke-dasharray='4 5'/%3E%3Cpath d='M30 6l8 6-9 4'/%3E%3C/svg%3E") center/contain no-repeat}
+.pcard{position:relative;height:276px;padding:24px 20px 18px;border:2px solid var(--ink);border-radius:28px;background:var(--surface);box-shadow:0 5px 0 var(--ink);display:flex;flex-direction:column;transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.pstep:hover .pcard{transform:translateY(-6px) rotate(-1deg)}
+.pnum{position:absolute;left:-12px;top:-16px;width:46px;height:46px;border-radius:50%;border:2px solid var(--ink);background:var(--highlight);display:grid;place-items:center;font:400 22px/1 var(--display);box-shadow:0 3px 0 var(--ink);z-index:2;transition:background .6s}
+.psticker{position:absolute;right:-14px;top:-26px;width:64px;rotate:12deg;z-index:2;transition:rotate .5s cubic-bezier(.34,1.56,.64,1),scale .5s cubic-bezier(.34,1.56,.64,1)}
+.pstep:hover .psticker{rotate:-8deg;scale:1.12}
+/* hovering a step plays its little screen: the ticks pop in turn, the circle takes a deep breath and the
+   choices light up one by one, the clock races */
+.pstep:hover .prow em{animation:tick .7s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--r) * .14s)}
+.pstep:hover .prow{translate:4px 0;transition-delay:calc(var(--r) * .06s)}
+.prow{transition:translate .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes tick{0%{scale:1}35%{scale:0}70%{scale:1.35}100%{scale:1}}
+.pstep:hover .plabel b{animation:bump .6s cubic-bezier(.34,1.56,.64,1) .5s both}
+@keyframes bump{50%{scale:1.18;rotate:-4deg}}
+.pstep:hover .porb div{animation:deep 3.2s cubic-bezier(.45,0,.55,1) infinite}
+@keyframes deep{0%,100%{scale:.78}40%{scale:1.12}}
+.pstep:hover .pchips span{animation:chip 2.4s steps(1) infinite;animation-delay:calc(var(--k) * .8s)}
+@keyframes chip{0%{background:var(--accent)}33%,100%{background:var(--surface)}}
+.pstep:hover .popen .pbtn{animation:bump .6s cubic-bezier(.34,1.56,.64,1) infinite alternate}
+.pstep h3{font:400 clamp(24px,2.2vw,30px)/1.05 var(--display);color:var(--ink);margin-top:24px}
+.pstep>p{font-size:17px;line-height:1.5;margin-top:10px;color:var(--ink2);max-width:30ch}
+.plabel{padding-left:26px;display:flex;justify-content:space-between;align-items:center;font:800 11px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.plabel b{font-size:12px;letter-spacing:0;text-transform:none;color:var(--ink);background:var(--highlight);border:2px solid var(--ink);border-radius:999px;padding:5px 10px}
+.prows{display:grid;gap:8px;margin-top:14px}
+.prow{display:flex;align-items:center;gap:10px;padding:7px 10px;border:2px solid var(--ink);border-radius:16px;font:700 14px/1 var(--body)}
+.prow i{width:26px;height:26px;border-radius:8px;border:2px solid var(--ink);flex:none;display:grid;place-items:center;font-style:normal;font-size:12px}
+.prow span{flex:1}
+.prow em{width:22px;height:22px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font:800 12px/1 var(--body);font-style:normal;background:var(--accent)}
+.prow.off{opacity:.55;border-style:dashed}.prow.off em{background:var(--surface)}
+.pbreak{align-items:center;justify-content:space-between}
+.porb{width:120px;height:120px;border-radius:50%;border:2px solid color-mix(in srgb,var(--accent) 60%,transparent);display:grid;place-items:center}
+.porb div{width:86px;height:86px;border-radius:50%;background:var(--tint);display:grid;place-items:center;animation:breathe 9s cubic-bezier(.45,0,.55,1) infinite}
+.porb img{width:50px}
+.pchips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.pchips span{padding:8px 12px;border:2px solid var(--ink);border-radius:999px;font:800 13px/1 var(--body);background:var(--surface)}
+.pchips span:first-child{background:var(--accent)}
+.popen{align-items:center;justify-content:space-between;text-align:center}
+.pring{width:118px;height:118px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--accent) calc(var(--left,1) * 360deg),var(--line) 0);border:2px solid var(--ink)}
+.pring div{width:88px;height:88px;border-radius:50%;background:var(--surface);border:2px solid var(--ink);display:grid;place-items:center;font:400 24px/1 var(--display);font-variant-numeric:tabular-nums}
+.popen p{font-size:13px;line-height:1.35;color:var(--mute)}
+.popen .pbtn{width:100%;height:40px;font-size:13px}
+.product-note{margin-top:36px;font-size:12px;line-height:1.5;color:var(--mute)}
+/* the steps settle in one after another; without the script they are simply there */
+.js .pstep{opacity:0;translate:0 40px;filter:blur(6px);transition:opacity 1s var(--ease),translate 1s var(--ease),filter 1s var(--ease);transition-delay:calc(var(--n) * .14s)}
+.js .product.in .pstep{opacity:1;translate:0 0;filter:none}
+@media(max-width:900px){
+ .ppanel{padding:56px 20px 32px;border-radius:32px}
+ .ppeek{width:110px;right:16px;top:-64px}
+ .psteps{grid-template-columns:1fr;gap:48px;max-width:420px;margin:40px auto 0}
+ .pstep:not(:last-child)::after{top:auto;bottom:-40px;left:50%;right:auto;translate:-50% 0;rotate:90deg}
+}
+
+/* ---------- runway: a vine grows down the page and sprouts at each feature ---------- */
+.runway{position:relative;padding:10vh 16px 6vh}
+.runway-head{position:relative;z-index:1;text-align:center;max-width:720px;margin:0 auto 6vh}
+.runway-head h2{font-size:clamp(40px,5.6vw,76px)}
+.runway-head p{margin:18px auto 0;max-width:40ch;color:var(--mute);font-size:19px;line-height:1.45}
+/* whatever slides up to the nav fades out instead of being sliced by it */
+.tuck{transition:opacity .35s}.tuck.tucked{opacity:0}
+.vine{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:0}
+.vine path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.vine .v-out{stroke:var(--ink);stroke-width:14}
+.vine .v-in{stroke:var(--accentText);stroke-width:9;transition:stroke .6s}
+.vine .v-hl{stroke:color-mix(in srgb,var(--accent) 70%,#fff);stroke-width:2.5;transition:stroke .6s}
+.vine.tipl{z-index:3}
+.vine .ghost{stroke:color-mix(in srgb,var(--ink) 12%,transparent);stroke-width:2;stroke-dasharray:2 10}
+.vine .leaf{transform-box:fill-box;transform-origin:0% 50%;scale:0;transition:scale .9s cubic-bezier(.34,1.56,.64,1)}
+.vine .leaf path:first-child{fill:var(--accent);stroke:var(--ink);stroke-width:3;transition:fill .6s}
+.vine .leaf path+path{stroke:var(--ink);stroke-width:2}
+.vine .leaf.on{scale:1}
+.vine .tip{fill:var(--highlight);stroke:var(--ink);stroke-width:3.5;transition:fill .6s}
+.feats{position:relative;max-width:1040px;margin:0 auto;display:grid;gap:8vh}
+.feat{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:80px;min-height:30vh}
+.feat .node{justify-self:center;width:220px;position:relative;z-index:3}
+.feat .copy{position:relative;z-index:1}
+.feat .node::before{content:"";position:absolute;inset:14%;border-radius:50%;background:var(--surface);border:2px solid var(--ink);box-shadow:0 5px 0 var(--ink);scale:0;transition:scale .9s cubic-bezier(.34,1.56,.64,1)}
+.feat .node>div{position:relative;scale:0;transition:scale 1s cubic-bezier(.34,1.56,.64,1) .1s}
+.feat.lit .node::before,.feat.lit .node>div{scale:1}
+.feat .node canvas{display:block;width:100%;aspect-ratio:1}
+.feat:nth-child(even) .node{order:2}
+.feat .copy>*{opacity:0;translate:0 30px;filter:blur(6px);transition:opacity 1s var(--ease),translate 1s var(--ease),filter 1s var(--ease)}
+.feat .copy>*:nth-child(2){transition-delay:.12s}
+.feat.lit .copy>*{opacity:1;translate:0 0;filter:none}
+.feat h3{font-size:clamp(34px,3.8vw,52px)}
+.feat p{margin-top:14px;font-size:19px;line-height:1.5;color:var(--ink2);max-width:32ch}
+
+/* ---------- breath: the peak. Landing here plays one full breath; the page holds until it ends ---------- */
+.breath{height:100svh;position:relative}
+.bstage{position:sticky;top:0;height:100svh;overflow:clip;--o:.42}
+.bstage::before{content:"";position:absolute;inset:0;background:var(--tint);opacity:calc(var(--o) * .9 - .35);transition:opacity .3s linear}
+.orb2{position:absolute;left:50%;top:44%;width:min(76vmin,640px);aspect-ratio:1;translate:-50% -50%;scale:var(--o);transition:scale .3s linear}
+.orb2 .halo{position:absolute;inset:0;border-radius:50%;border:3px solid color-mix(in srgb,var(--accent) 60%,transparent)}
+.orb2 .core{position:absolute;inset:13%;border-radius:50%;background:color-mix(in srgb,var(--tint) 70%,var(--surface));display:grid;place-items:center;box-shadow:0 0 0 12px color-mix(in srgb,var(--surface) 50%,transparent)}
+.orb2 .core>div{width:52%}
+.orb2 canvas{display:block;width:100%;aspect-ratio:1}
+.bstage::before,.orb2{transition-duration:var(--dur,.3s)!important;transition-timing-function:cubic-bezier(.45,0,.55,1)!important}
+.bwords{position:absolute;left:16px;right:16px;bottom:17vh;height:1.2em;font:400 clamp(30px,4vw,52px)/1.1 var(--display);text-align:center}
+.bw{position:absolute;inset:0;opacity:0;translate:0 18px;filter:blur(6px);transition:opacity 1s var(--ease),translate 1s var(--ease),filter 1s var(--ease)}
+.bw.on{opacity:1;translate:0 0;filter:none}
+.bnote{position:absolute;left:16px;right:16px;bottom:6vh;text-align:center;color:var(--mute);font-size:17px;line-height:1.45;opacity:0;translate:0 14px;transition:opacity 1.2s var(--ease),translate 1.2s var(--ease)}
+.bnote small{display:block;margin:6px auto 0;max-width:52ch;font-size:12px}
+.bstage.done .bnote{opacity:1;translate:0 0}
+
+/* ---------- close: one dark card to end on, with stickers you can still throw ---------- */
+.get{position:relative;padding:10vh 16px 8vh;scroll-margin-top:80px}
+/* the cursor leaves a trail of stickers here; it never takes clicks, so the buttons stay usable */
+#trail{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+.closing{position:relative;max-width:1180px;margin:auto;padding:clamp(72px,10vh,110px) 24px;border-radius:44px;text-align:center;color:var(--paper);
+  background:radial-gradient(color-mix(in srgb,var(--paper) 9%,transparent) 1.1px,transparent 1.2px) 0 0/18px 18px,var(--ink);box-shadow:0 6px 0 color-mix(in srgb,var(--ink) 55%,var(--paper));transition:background-color .6s}
+.closing .icon{width:88px;height:88px;border-radius:22px;margin:0 auto 26px;border:2px solid var(--paper)}
+.get h2{font-size:clamp(46px,6.4vw,92px);line-height:.98;color:var(--paper);margin:0 auto}
+.get h2 em{font-style:normal;color:var(--highlight)}
+.get h2 em.mark{background-image:linear-gradient(color-mix(in srgb,var(--accent) 55%,transparent),color-mix(in srgb,var(--accent) 55%,transparent))}
+.get p{margin:20px auto 30px;max-width:38ch;font-size:clamp(18px,1.8vw,21px);line-height:1.45;color:color-mix(in srgb,var(--paper) 78%,transparent)}
+.get .btn.lime{background:var(--highlight);color:var(--ink);border-color:var(--highlight);box-shadow:0 4px 0 color-mix(in srgb,var(--highlight) 40%,#000)}
+.get .actions{display:flex;gap:22px;justify-content:center;align-items:center;flex-wrap:wrap}
+.get .actions a:not(.btn){color:var(--paper);font-weight:700;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1.5px;min-height:44px;display:inline-flex;align-items:center}
+.get .actions a:not(.btn):hover,.get .actions a:not(.btn):focus-visible{text-decoration-style:wavy;text-decoration-color:var(--highlight)}
+.get .availability{display:block;margin-top:22px;font-size:14px;color:color-mix(in srgb,var(--paper) 60%,transparent)}
+.cstk{position:absolute;width:190px;z-index:2;scale:0;transition:scale 1s cubic-bezier(.34,1.56,.64,1)}
+.cstk.c1{left:-40px;top:-60px;transition-delay:.2s}.cstk.c2{right:-30px;bottom:-70px;transition-delay:.4s}
+.get.lit .cstk{scale:1}
+.cstk canvas{display:block;width:100%;aspect-ratio:1}
+.cstk>div{cursor:grab;touch-action:none}
+.js .get .closing>*:not(.cstk){opacity:0;translate:0 30px;filter:blur(6px);transition:opacity 1.1s var(--ease),translate 1.1s var(--ease),filter 1.1s var(--ease)}
+.js .get.lit .closing>*:not(.cstk){opacity:1;translate:0 0;filter:none}
+.js .get .closing>h2{transition-delay:.1s}.js .get .closing>p{transition-delay:.2s}.js .get .closing>.actions{transition-delay:.3s}
+footer{padding:0 24px 36px;text-align:center;font-size:13px;color:var(--mute);line-height:1.7;background:var(--paper)}
+.footer-top{max-width:1080px;margin:0 auto 28px;padding-top:24px;border-top:1px solid var(--ink);display:flex;align-items:center;justify-content:space-between;gap:24px}
+.footer-links{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.footer-links a{display:inline-flex;align-items:center;min-height:44px;text-underline-offset:4px}
+@media(max-width:640px){
+ .closing{border-radius:32px}
+ .cstk{width:110px}.cstk.c1{left:-12px;top:-50px}.cstk.c2{right:-8px;bottom:-50px}
+ .get .btn{padding:0 20px;font-size:16px}
+ .footer-top{align-items:flex-start;flex-direction:column;gap:12px}
+}
+@media(prefers-reduced-motion:reduce){.js .pstep,.js .get .closing>*{transition:none!important}}
+
+.packs{display:inline-flex;gap:10px;align-items:center;margin-bottom:14px;padding:8px 12px;border:2px solid var(--ink);border-radius:999px;background:var(--surface)}
+.packs span{font-weight:700;color:var(--ink)}
+.packs button{width:26px;height:26px;border-radius:50%;border:2px solid var(--ink);cursor:pointer;padding:0;transition:transform .16s var(--press)}
+.packs button:active{transform:scale(.9)}
+.packs button[aria-pressed=true]{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--ink)}
+
+/* phone width: headline over the phone, words under it, the vine runs down the left */
+@media (max-width:900px){
+  :root{--pw:min(240px,60vw);--ph:calc(var(--pw) * 2.14)}
+  .intro{top:94px}
+  .intro h1{font-size:clamp(34px,10.4vw,46px);margin-top:12px}
+  .intro .sub{font-size:15px;line-height:1.4;margin:10px auto 14px;max-width:34ch}
+  .intro .btn{min-height:44px;font-size:15px}
+  .chip{font-size:11px;padding:5px 12px 5px 6px}.chip i{width:18px;height:18px}
+  /* short screens (Safari with its bars): drop the chip so the phone keeps its room */
+  @media (max-height:720px){.chip{display:none}.intro h1{margin-top:0}}
+  .stk{--s:96px!important}
+  .s1{left:-62px;top:-30px}.s2{right:-66px;top:40px}.s3{left:-58px;bottom:30px}.s4{right:-56px;bottom:-24px}
+  .hint{display:none}
+  .heads,.bodies{left:16px;right:16px;width:auto;max-width:none;translate:none;text-align:center}
+  .heads{top:78px;height:110px}.bodies{top:auto;bottom:16px;height:150px;justify-content:end}
+  .heads>*,.bodies>*{align-items:center}
+  .heads h2{font-size:clamp(28px,8vw,38px)}
+  .num{margin-bottom:8px}
+  .bodies p{font-size:15px}
+  .bodies small.ln{display:none}
+  .phone{border-width:8px;border-radius:42px}
+  .slab{border-radius:42px}
+  .screen{padding:44px 12px 14px;zoom:.83}
+  .phone::before{width:70px;height:20px}
+  .feats{gap:12vh}
+  .bwords{bottom:31vh}.bnote{bottom:5vh;font-size:15px}
+  .feat{grid-template-columns:96px 1fr;gap:20px;min-height:0;align-items:start}
+  .feat .node,.feat:nth-child(even) .node{order:0;width:96px;justify-self:start}
+  .feat p{font-size:16px}
+  .runway{padding-left:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  .rv,.w>span,.p3d,.ptilt,.pshadow,.inl,.c{animation:none!important}
+  .stk{translate:none}
+  .orb div{animation:none}
+  .ptilt,.screen>*,.heads *,.bodies *,.orb2,.bstage::before,.bw,.bnote,.feat *,.vine .leaf{transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="glows"></div>
+<div class="cur" aria-hidden="true"><svg viewBox="0 0 100 100"><path class="side" d="M14 10L14 84L33 66L46 94L60 88L48 61L74 61Z" transform="translate(4 6)"/><path d="M14 10L14 84L33 66L46 94L60 88L48 61L74 61Z"/></svg></div>
+
+<nav aria-label="Main">
+  <a class="logo" href="#top"><img src="img/icon.png" alt="">Pause</a>
+  <a class="btn" href="https://testflight.apple.com/join/aXHdD5cT">Join the beta</a>
+</nav>
+
+<main id="top">
+  <section class="story" aria-label="What Pause does">
+    <div class="stage">
+      <div class="intro">
+        <span class="chip rv" style="--d:.1"><i>✦</i>For iPhone and Apple Watch · free beta</span>
+        <h1 class="split">Put the phone <img class="inl" src="img/phone.png" alt=""> down, <em class="mark">gently</em></h1>
+        <p class="sub rv" style="--d:.75">Picked up your phone for one thing and lost an hour? Pause is a kind app for women with ADHD. It asks you for one breath before you scroll.</p>
+        <div class="cta rv" style="--d:.9"><a class="btn dark" href="https://testflight.apple.com/join/aXHdD5cT"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.4.8c1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.7-1-2.7-4.1zM13.9 5c.7-.9 1.2-2 1-3.2-1 0-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.1 1.2.1 2.3-.6 3.1-1.5z"/></svg>Join the beta</a><a class="btn ghost" href="#breath">Try one breath</a></div>
+      </div>
+
+      <div class="heads" aria-live="polite">
+        <div><h2 class="split">A breath before the scroll</h2></div>
+        <div><h2 class="split">A streak that forgives you</h2></div>
+        <div><h2 class="split">Friends who cheer you on</h2></div>
+      </div>
+
+      <div class="pwrap">
+        <div class="stk s1"><div data-sticker="sleepy" data-drag data-enter="1.5"></div></div>
+        <div class="stk s2"><div data-sticker="breathe" data-drag data-enter="1.7" data-offset="40"></div></div>
+        <div class="stk s3"><div data-sticker="plant" data-drag data-enter="1.9" data-offset="20"></div></div>
+        <div class="stk s4"><div data-sticker="heart" data-drag data-enter="2.1" data-offset="60"></div></div>
+        <div class="p3d"><div class="ptilt">
+          <div class="phone" role="group" aria-label="Try the Pause app">
+            <div class="demo" aria-hidden="true">
+              <div class="dgrid"><i style="background:var(--surface)">✉</i><i class="pa"><span class="cam"></span></i><i style="background:var(--highlight)">☀</i><i style="background:var(--tint)">✦</i><i style="background:var(--accent)">◎</i><i style="background:var(--surface)">☾</i><i class="pb">♪</i><i style="background:var(--highlight)">✓</i><i style="background:var(--tint)">☁</i><i style="background:var(--celebrate)">♥</i><i style="background:var(--surface)">✎</i><i style="background:var(--accent)">⌂</i></div>
+              <span class="dtap a"></span><span class="dtap b"></span>
+              <div class="dopen a"><span class="cam"></span></div>
+              <div class="dblk a"><img src="img/icon.png" alt=""><span>Pause first</span></div>
+              <div class="dopen b">♪</div>
+              <div class="dblk b"><img src="img/icon.png" alt=""><span>Pause first</span></div>
+            </div>
+            <div class="strip">
+              <div class="screen" style="text-align:left">
+                <div class="top"><div class="daytop"><span class="ring"><i></i></span><small>Wednesday<b>Hi, Linh</b></small></div><span class="pill">Journey</span></div>
+                <div class="card today">
+                  <div class="eyebrow">Today · your apps <b>Sample</b></div>
+                  <div class="stats">
+                    <div><b>59<span>min</span></b><small>On your apps</small></div>
+                    <div><b>20</b><small>Phone pickups</small></div>
+                  </div>
+                  <div class="bars" aria-hidden="true">
+                    <i style="--h:12;--n:0"></i><i style="--h:30;--n:1"></i><i style="--h:22;--n:2"></i><i style="--h:55;--n:3"></i><i style="--h:40;--n:4"></i><i style="--h:18;--n:5"></i><i style="--h:70;--n:6"></i><i style="--h:48;--n:7"></i><i style="--h:26;--n:8"></i><i class="now" style="--h:60;--n:9"></i>
+                  </div>
+                  <div class="hours"><span>8 am</span><span>12</span><span>now</span></div>
+                </div>
+                <div class="what">What now?</div>
+                <div class="tiles">
+                  <button class="tile" data-open="breathe" style="background:var(--accent)"><img src="img/air.png" alt="">Breathe</button>
+                  <button class="tile" data-open="focus" style="background:var(--highlight)"><img src="img/hourglass.png" alt="">Focus</button>
+                  <button class="tile" data-open="walk" style="background:var(--tint)"><img src="img/sneaker.png" alt="">Walk</button>
+                </div>
+                <div class="strk"><img src="img/sparkle.png" alt=""><div><b>12-day streak</b><small>A freeze kept Tuesday going</small><span aria-hidden="true"><i></i><i></i><i class="fz"></i><i></i><i></i><i></i><i class="no"></i></span></div></div>
+              </div>
+              <div class="screen sub" data-sub="breathe">
+                <button class="x" aria-label="Back to Today">✕</button>
+                <div class="eyebrow">Sigh break</div>
+                <h3 class="big">Two breaths in, one long breath out</h3>
+                <div class="orb"><div><img src="img/air.png" alt=""></div></div>
+                <div class="bcue" aria-live="polite">Follow the circle</div>
+                <button class="pbtn tap">Start</button>
+              </div>
+              <div class="screen sub" data-sub="focus">
+                <button class="x" aria-label="Back to Today">✕</button>
+                <div class="eyebrow">Focus</div>
+                <h3 class="big">Pick a length</h3>
+                <div class="fring"><div class="ftime">25:00</div></div>
+                <div class="fchips"><button data-min="10" aria-pressed="false">10</button><button data-min="25" aria-pressed="true">25</button><button data-min="45" aria-pressed="false">45</button></div>
+                <button class="pbtn tap">Start 25 minutes</button>
+              </div>
+              <div class="screen sub" data-sub="walk">
+                <button class="x" aria-label="Back to Today">✕</button>
+                <div class="eyebrow">Walk · 5 min</div>
+                <h3 class="big">Five minutes for yourself.</h3>
+                <img class="wshoe" src="img/sneaker.png" alt="">
+                <div class="wsteps">0</div>
+                <div class="wlabel">steps</div>
+                <button class="pbtn tap">Start the walk</button>
+              </div>
+              <div class="screen">
+                <div class="eyebrow">Pause first</div>
+                <h3 class="big">Breathe first, then decide</h3>
+                <p class="lead">Breathe for a minute, walk or focus in Pause, then come back.</p>
+                <div class="orb"><div><img src="img/hourglass.png" alt=""></div></div>
+                <div class="pbtn">Breathe first</div>
+                <div class="plink">Not now</div>
+              </div>
+              <div class="screen">
+                <img class="streak-hero" src="img/sparkle.png" alt="">
+                <h3 class="big">Two-week streak</h3>
+                <p class="lead">Freezes count, so one messy day won't undo it.</p>
+                <div class="week">
+                  <span><b>✓</b>M</span><span><b>✓</b>T</span><span><b class="fz"><img src="img/ice.png" alt=""></b>W</span><span><b>✓</b>T</span><span><b>✓</b>F</span><span><b>✓</b>S</span><span><b class="no"></b>S</span>
+                </div>
+                <div class="bar"><i></i></div>
+                <p class="lead">12 of 14 days</p>
+                <div style="margin-top:auto" class="pbtn">Nice</div>
+              </div>
+              <div class="screen">
+                <div class="eyebrow">Your circle</div>
+                <h3 class="big">Little wins, shared</h3>
+                <div class="friends">
+                  <div class="card friend"><span class="av" style="background:var(--celebrate)">M</span><p><b>Mai</b> took a sigh break before bed</p><img src="img/moon.png" alt=""></div>
+                  <div class="card friend"><span class="av" style="background:var(--highlight)">L</span><p><b>Linh</b> stayed under her goal today</p><img src="img/sparkle.png" alt=""></div>
+                  <div class="card friend"><span class="av" style="background:var(--tint)">A</span><p><b>An</b> cheered your walk</p><img src="img/hearts.png" alt=""></div>
+                </div>
+                <div style="margin-top:auto" class="pbtn">Send a cheer</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <div class="pshadow" aria-hidden="true"></div>
+        <div class="hint rv" style="--d:2.4">Psst, you can throw the stickers</div>
+      </div>
+
+      <div class="bodies">
+        <div><p class="ln">You choose the apps that swallow your time. Next time you open one, Pause asks you to breathe for a minute first. A short walk or a focus timer works too.</p><p class="ln" style="--i:1;margin-top:12px">Then your apps open for 15 minutes, and the rest is up to you.</p></div>
+        <div><p class="ln">Had a messy day? It happens. A freeze keeps your streak going, so one off day can't wipe out a good week.</p></div>
+        <div><p class="ln">You can bring a few close friends along. You'll see each other's small wins and can send a cheer.</p><p class="ln" style="--i:1;margin-top:12px">There's no leaderboard, and nobody is keeping score.</p></div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="product" id="how-it-works" aria-labelledby="product-title">
+    <div class="ppanel">
+      <div class="ppeek"><div data-sticker="plant" data-drag data-offset="30"></div></div>
+      <div class="product-heading tuck">
+        <h2 id="product-title" class="split">A little pause.<br>Then your <em class="mark">choice.</em></h2>
+        <p>Pause slows you down for a minute, then hands your phone back. What happens next is up to you.</p>
+      </div>
+      <ol class="psteps">
+        <li class="pstep" style="--n:0">
+          <span class="pnum" aria-hidden="true">1</span><img class="psticker" src="img/phone.png" alt="">
+          <div class="pcard" aria-hidden="true">
+            <div class="plabel">Distracting apps <b>3 picked</b></div>
+            <div class="prows">
+              <div class="prow" style="--r:0"><i style="background:var(--celebrate)">▶</i><span>Short videos</span><em>✓</em></div>
+              <div class="prow" style="--r:1"><i style="background:var(--highlight)">◎</i><span>Photo feed</span><em>✓</em></div>
+              <div class="prow" style="--r:2"><i style="background:var(--tint)">✦</i><span>Games</span><em>✓</em></div>
+              <div class="prow off"><i style="background:var(--surface)">✉</i><span>Messages</span><em></em></div>
+            </div>
+          </div>
+          <h3>Pick your apps</h3>
+          <p>You choose the ones you know are trouble. Everything else opens as usual.</p>
+        </li>
+        <li class="pstep" style="--n:1">
+          <span class="pnum" aria-hidden="true">2</span><img class="psticker" src="img/air.png" alt="">
+          <div class="pcard pbreak" aria-hidden="true">
+            <div class="plabel" style="width:100%">Pause first</div>
+            <div class="porb"><div><img src="img/air.png" alt=""></div></div>
+            <div class="pchips"><span style="--k:0">Breathe · 1 min</span><span style="--k:1">Walk</span><span style="--k:2">Focus</span></div>
+          </div>
+          <h3>Take a small break</h3>
+          <p>A minute of breathing does it. A short walk or a focus timer counts too.</p>
+        </li>
+        <li class="pstep" style="--n:2">
+          <span class="pnum" aria-hidden="true">3</span><img class="psticker" src="img/sun.png" alt="">
+          <div class="pcard popen" aria-hidden="true">
+            <div class="pring"><div class="pclock">15:00</div></div>
+            <p>Done. Your apps can open for 15 minutes.</p>
+            <div class="pbtn">Use for 15 min</div>
+          </div>
+          <h3>Then it's up to you</h3>
+          <p>Your apps open for 15 minutes. Scroll a little or put the phone down. Either is fine.</p>
+        </li>
+      </ol>
+      <p class="product-note">These are drawings of the app. The app names and numbers are only examples.</p>
+    </div>
+  </section>
+
+  <section class="runway" aria-label="More in Pause">
+    <svg class="vine" aria-hidden="true"><path class="ghost"/><g class="grow"><path class="v-out"/><path class="v-in"/><path class="v-hl"/></g><g class="leaves"></g></svg>
+    <svg class="vine tipl" aria-hidden="true"><circle class="tip" r="12"/></svg>
+    <div class="runway-head tuck">
+      <h2 class="split">Small things that add up</h2>
+      <p>A few more things Pause does while you get on with your day.</p>
+    </div>
+    <div class="feats">
+      <article class="feat">
+        <div class="node tuck"><div data-sticker="bell" data-once></div></div>
+        <div class="copy tuck"><h3 class="split">A gentle tap on the wrist</h3><p>Been scrolling for a while? Your Apple Watch gives you a soft tap, so you can look up without picking up your phone again.</p></div>
+      </article>
+      <article class="feat">
+        <div class="node tuck"><div data-sticker="tea" data-once></div></div>
+        <div class="copy tuck"><h3 class="split">How's your head today?</h3><p>Bright, calm, foggy or restless? One tap on whichever fits is enough, and it never leaves your phone.</p></div>
+      </article>
+      <article class="feat">
+        <div class="node tuck"><div data-sticker="calendar" data-once></div></div>
+        <div class="copy tuck"><h3 class="split">See the good days add up</h3><p>Every sigh break, walk and check-in goes on your calendar, so you can watch the small wins pile up.</p></div>
+      </article>
+      <article class="feat">
+        <div class="node tuck"><div data-sticker="padlock" data-once></div></div>
+        <div class="copy tuck"><h3 class="split">What's yours stays yours</h3><p>Your Screen Time minutes, app names, moods and notes stay on your phone. They are never sent to us.</p></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="breath" id="breath" aria-label="Take one breath with us">
+    <div class="bstage">
+      <div class="orb2" aria-hidden="true"><div class="halo"></div><div class="core"><div data-sticker="breathe"></div></div></div>
+      <div class="bwords" aria-live="polite">
+        <p class="bw on">Take one breath with us</p>
+        <p class="bw">Breathe in through your nose</p>
+        <p class="bw">One more short sip in</p>
+        <p class="bw">Long, slow breath out</p>
+        <p class="bw">You chose a reset.</p>
+      </div>
+      <p class="bnote">That was a sigh break. Pause has one ready whenever your head feels loud.<small>Cyclic sighing improved mood in a randomized study of healthy adults (Balban et al., Cell Reports Medicine, 2023). Pause is not a medical product.</small></p>
+    </div>
+  </section>
+
+  <section class="get" id="get" aria-labelledby="get-title">
+    <canvas id="trail" aria-hidden="true"></canvas>
+    <div class="closing">
+      <div class="cstk c1"><div data-sticker="heart" data-drag data-offset="20"></div></div>
+      <div class="cstk c2"><div data-sticker="sleepy" data-drag data-offset="70"></div></div>
+      <img class="icon" src="img/icon.png" width="88" height="88" alt="">
+      <h2 id="get-title" class="split">Your phone,<br>on your <em class="mark">terms.</em></h2>
+      <p>Come and try it. Pause is in beta on iPhone, and it's free.</p>
+      <div class="actions">
+        <a class="btn lime" href="https://testflight.apple.com/join/aXHdD5cT"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.4.8c1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.7-1-2.7-4.1zM13.9 5c.7-.9 1.2-2 1-3.2-1 0-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.1 1.2.1 2.3-.6 3.1-1.5z"/></svg>Join the beta</a>
+        <a href="privacy/">What we do with your data</a>
+      </div>
+      <small class="availability">The button opens TestFlight, Apple's app for trying apps early.</small>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-top">
+    <a class="logo" href="#top"><img src="img/icon.png" width="32" height="32" alt="">Pause</a>
+    <div class="footer-links"><a href="privacy/">Privacy</a><a href="terms/">Terms</a><a href="support/">Support</a><span>© 2026 Pause</span></div>
+  </div>
+  <div class="packs" role="group" aria-label="Page theme">
+    <span>Theme</span>
+    <button data-pack="meadow" aria-label="Meadow" style="background:#1FBF6A"></button>
+    <button data-pack="clay" aria-label="Clay" style="background:#C67139"></button>
+    <button data-pack="lilac" aria-label="Lilac" style="background:#8B7BF7"></button>
+    <button data-pack="tide" aria-label="Tide" style="background:#29B3C9"></button>
+  </div>
+  <div>Pause is a wellness app, not a medical product. It does not diagnose or treat any condition.</div>
+</footer>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  // Split headings into masked words, so each word can rise out of its own line.
+  document.querySelectorAll('.split').forEach(h => {
+    let i = 0;
+    const wrap = node => {
+      if (node.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        node.textContent.split(/(\s+)/).forEach(part => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) return frag.append(part);
+          const w = document.createElement('span'); w.className = 'w';
+          const s = document.createElement('span'); s.style.setProperty('--i', i++);
+          // .h carries the hover lift, separate from the entrance; words inside <em> also split into letters for a wave
+          const hov = document.createElement('span'); hov.className = 'h';
+          if (node.parentElement.closest('em')) [...part].forEach((ch, c) => { const l = document.createElement('span'); l.className = 'c'; l.textContent = ch; l.style.setProperty('--c', c); hov.append(l); });
+          else hov.textContent = part;
+          s.append(hov); w.append(s); frag.append(w);
+        });
+        node.replaceWith(frag);
+      } else [...node.childNodes].forEach(wrap);
+    };
+    [...h.childNodes].forEach(wrap);
+  });
+
+  document.documentElement.classList.add('js');
+  const productEl = document.querySelector('.product');
+  new IntersectionObserver(([e], io) => { if (e.isIntersecting) { productEl.classList.add('in'); io.disconnect(); } }, { threshold: .2 }).observe(productEl);
+  // the step-3 ring counts down slowly while it is on screen, from 15:00
+  const clock = document.querySelector('.pclock'), ring = document.querySelector('.pring');
+  let secs = 900, racing = false;
+  const showClock = () => {
+    clock.textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+    ring.style.setProperty('--left', (secs / 900).toFixed(4));
+  };
+  if (!reduce) setInterval(() => {
+    if (racing || !productEl.classList.contains('in') || document.hidden) return;
+    secs = secs > 0 ? secs - 1 : 900; showClock();
+  }, 1000);
+  // hovering the third step speeds the clock up to 30 seconds per second: quick enough to see it move, slow enough to read
+  const step3 = ring.closest('.pstep');
+  let raceAcc = 0, raceLast = 0;
+  const race = now => {
+    if (!racing) return;
+    raceAcc += (now - (raceLast || now)) / 1000 * 30; raceLast = now;
+    if (raceAcc >= 1) { const n = Math.floor(raceAcc); raceAcc -= n; secs = secs > n ? secs - n : 900; showClock(); }
+    requestAnimationFrame(race);
+  };
+  step3.addEventListener('pointerenter', () => { if (!reduce && !racing) { racing = true; raceLast = 0; requestAnimationFrame(race); } });
+  step3.addEventListener('pointerleave', () => { racing = false; });
+  const markIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); markIO.unobserve(e.target); } }), { threshold: .6 });
+  document.querySelectorAll('em.mark').forEach(m => markIO.observe(m));
+
+  /* ---------- story ---------- */
+  const story = document.querySelector('.story');
+  const stage = story.querySelector('.stage');
+  const intro = stage.querySelector('.intro');
+  const pwrap = stage.querySelector('.pwrap');
+  const ptilt = stage.querySelector('.ptilt');
+  const screens = [...stage.querySelectorAll('.screen:not(.sub)')];
+  const subs = [...stage.querySelectorAll('.screen.sub')];
+  subs.forEach(sc => [...sc.children].forEach((c, k) => c.style.setProperty('--k', k)));
+  screens.forEach(sc => [...sc.children].forEach((c, k) => c.style.setProperty('--k', k)));
+  const heads = [...stage.querySelectorAll('.heads > *')];
+  const bodies = [...stage.querySelectorAll('.bodies > *')];
+  const SCREENS = heads.length + 1;
+  const mobile = matchMedia('(max-width: 900px)');
+  let geo, active = -1;
+
+  // Where the phone sits under the intro, and where it sits once the chapters take over.
+  function measure() {
+    const vh = stage.clientHeight, ph = pwrap.offsetHeight;
+    const introBottom = intro.offsetTop + intro.offsetHeight;
+    let s0, y0, x0 = 0, s1, y1;
+    if (mobile.matches) {
+      // phones: the intro sits on top and the phone peeks up under it
+      // it may run off the bottom edge: a phone peeking up reads better than a tiny one that fits
+      s0 = clamp((vh - introBottom - 28) / ph, .66, 1); y0 = introBottom + 18 + s0 * ph / 2 - vh / 2;
+      const top = 196, bottom = vh - 172; s1 = clamp((bottom - top) / ph, .4, 1); y1 = (top + bottom) / 2 - vh / 2;
+    } else {
+      // wide screens: the intro on the left, the whole phone on the right, then it glides to the centre
+      // ...and zooms in as it gets there
+      s1 = clamp((vh - 120) / ph, .5, 1.2); s0 = s1 * .9; y1 = 26; y0 = 30; x0 = Math.min(310, innerWidth * .22);
+    }
+    geo = { s0, y0, x0, s1, y1 };
+  }
+
+  /* ---------- the hero phone works: tiles open their screens ---------- */
+  let openSub = null, subTimers = [];
+  const clearSub = () => { subTimers.forEach(clearInterval); subTimers.forEach(clearTimeout); subTimers = []; };
+  function closeSub() {
+    if (!openSub) return;
+    clearSub(); openSub.classList.remove('on'); openSub = null;
+    if (active === 0) screens[0].classList.add('on');
+  }
+  function openScreen(name) {
+    clearSub();
+    openSub = subs.find(s => s.dataset.sub === name);
+    screens[0].classList.remove('on');
+    resetSub(openSub);
+    openSub.classList.add('on');
+    openSub.querySelector('.x').focus({ preventScroll: true });
+  }
+  // a tap on the phone during the home-screen intro skips straight to Today
+  stage.querySelector('.demo')?.addEventListener('pointerdown', e => e.currentTarget.remove());
+  stage.querySelectorAll('[data-open]').forEach(t => t.addEventListener('click', () => openScreen(t.dataset.open)));
+  subs.forEach(sc => sc.querySelector('.x').addEventListener('click', () => { const from = sc.dataset.sub; closeSub(); stage.querySelector(`[data-open="${from}"]`).focus({ preventScroll: true }); }));
+  function resetSub(sc) {
+    const btn = sc.querySelector('.tap');
+    if (sc.dataset.sub === 'breathe') { sc.querySelector('.bcue').textContent = 'Follow the circle'; sc.querySelector('.orb').classList.remove('go'); sc.querySelector('.orb div').style.scale = ''; btn.textContent = 'Start'; }
+    if (sc.dataset.sub === 'focus') { setFocus(sc, +sc.querySelector('[aria-pressed=true]').dataset.min); }
+    if (sc.dataset.sub === 'walk') { sc.querySelector('.wsteps').textContent = '0'; sc.classList.remove('walking'); btn.textContent = 'Start the walk'; }
+  }
+  // breathe: the app's sigh, cue by cue
+  const bSub = subs.find(s => s.dataset.sub === 'breathe');
+  bSub.querySelector('.tap').addEventListener('click', () => {
+    clearSub();
+    const cue = bSub.querySelector('.bcue'), orbEl = bSub.querySelector('.orb'), core = orbEl.querySelector('div');
+    orbEl.classList.add('go');
+    const steps = [['Breathe in through your nose', 1.0, 0], ['One more short sip in', 1.12, 2200], ['Long, slow breath out', .7, 3200], ['You chose a reset.', .82, 7400]];
+    steps.forEach(([text, sc, t]) => subTimers.push(setTimeout(() => {
+      cue.textContent = text;
+      core.style.transitionDuration = t === 3200 ? '4s' : '1.2s';
+      core.style.scale = sc;
+    }, reduce ? 0 : t)));
+    subTimers.push(setTimeout(() => { bSub.querySelector('.tap').textContent = 'Again'; }, reduce ? 0 : 7400));
+  });
+  // focus: pick a length, then the ring counts down for real
+  const fSub = subs.find(s => s.dataset.sub === 'focus');
+  function setFocus(sc, min) {
+    clearSub();
+    sc.querySelectorAll('.fchips button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.min === min));
+    sc.querySelector('.ftime').textContent = `${min}:00`;
+    sc.querySelector('.fring').style.setProperty('--left', 1);
+    sc.querySelector('.tap').textContent = `Start ${min} minutes`;
+  }
+  fSub.querySelectorAll('.fchips button').forEach(b => b.addEventListener('click', () => setFocus(fSub, +b.dataset.min)));
+  fSub.querySelector('.tap').addEventListener('click', () => {
+    clearSub();
+    const min = +fSub.querySelector('[aria-pressed=true]').dataset.min, total = min * 60;
+    let left = total;
+    fSub.querySelector('.tap').textContent = 'Focusing…';
+    subTimers.push(setInterval(() => {
+      left = Math.max(0, left - 1);
+      fSub.querySelector('.ftime').textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
+      fSub.querySelector('.fring').style.setProperty('--left', (left / total).toFixed(4));
+    }, 1000));
+  });
+  // walk: the shoe steps and the counter climbs
+  const wSub = subs.find(s => s.dataset.sub === 'walk');
+  wSub.querySelector('.tap').addEventListener('click', () => {
+    clearSub();
+    let steps = 0;
+    wSub.classList.add('walking');
+    wSub.querySelector('.tap').textContent = 'Walking…';
+    subTimers.push(setInterval(() => { steps += 1 + Math.round(Math.random()); wSub.querySelector('.wsteps').textContent = steps; }, 520));
+  });
+
+  function setActive(n) {
+    if (n === active) return;
+    // scrolling on before the hero demo ends: the chapters take the phone over
+    if (n > 0) stage.querySelector('.demo')?.remove();
+    heads.forEach((el, i) => el.classList.toggle('on', i === n - 1));
+    bodies.forEach((el, i) => el.classList.toggle('on', i === n - 1));
+    // a chapter change closes whatever the visitor opened on the hero phone
+    if (n !== 0) closeSub();
+    screens.forEach((el, i) => el.classList.toggle('on', i === n && !(n === 0 && openSub)));
+    active = n;
+  }
+
+  function storyFrame() {
+    const r = story.getBoundingClientRect();
+    const p = clamp(-r.top / (r.height - innerHeight), 0, 1);
+    const t = ease(clamp(p / .13, 0, 1));
+    stage.style.setProperty('--t', t.toFixed(3));
+    intro.style.opacity = clamp(1 - t * 1.5, 0, 1);
+    intro.style.transform = `translate(${mobile.matches ? 0 : -60 * t}px, ${-40 * t}px)`;
+    intro.style.filter = t > .01 ? `blur(${6 * t}px)` : '';
+    intro.style.visibility = t > .7 ? 'hidden' : '';
+    pwrap.style.transform = `translate(${lerp(geo.x0, 0, t)}px, ${lerp(geo.y0, geo.y1, t)}px) scale(${lerp(geo.s0, geo.s1, t)})`;
+    standing = t; tilt();
+
+    // the chapters share the rest of the scroll evenly
+    const q = clamp((p - .16) / .84, 0, .999) * (SCREENS - 1);
+    setActive(t < .6 ? 0 : 1 + Math.floor(q));
+  }
+
+  // The phone lies tilted in the hero and stands up to face the reader as the chapters start; on top of that it leans toward the cursor.
+  let lean = { x: 0, y: 0 }, standing = 0;
+  for (let z = 10; z >= 1; z--) {
+    const sl = document.createElement('div'); sl.className = 'slab'; sl.setAttribute('aria-hidden', 'true');
+    // a lighter band through the middle of the edge reads as the phone's metal rim
+    sl.style.setProperty('--z', z); sl.style.setProperty('--hl', Math.max(0, 40 - Math.abs(z - 5.5) * 12));
+    ptilt.prepend(sl);
+  }
+  function tilt() {
+    const k = (1 - standing) * (mobile.matches ? .6 : 1);
+    const ry = -20 * k + lean.x * 10;
+    ptilt.style.transform = `perspective(2200px) rotateX(${11 * k - lean.y * 7}deg) rotateY(${ry}deg) rotateZ(${5 * k}deg)`;
+    // the glare slides across the glass as the phone turns
+    ptilt.style.setProperty('--gx', (-ry * 1.6).toFixed(1));
+  }
+  if (!reduce) addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return;
+    lean = { x: e.clientX / innerWidth - .5, y: e.clientY / innerHeight - .5 };
+    tilt();
+  }, { passive: true });
+
+  /* ---------- runway vine ---------- */
+  const runway = document.querySelector('.runway');
+  const growPaths = [...runway.querySelectorAll('.grow path')];
+  const allPaths = [...runway.querySelectorAll('.grow path, .ghost')];
+  const stem = runway.querySelector('.grow .v-in');
+  const tip = runway.querySelector('.tip'), leafGroup = runway.querySelector('.leaves');
+  const feats = [...runway.querySelectorAll('.feat')];
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  let vine = null;
+
+  function buildVine() {
+    const box = runway.getBoundingClientRect();
+    const at = (el, fx = .5, fy = .5) => { const r = el.getBoundingClientRect(); return [r.left - box.left + r.width * fx, r.top - box.top + r.height * fy]; };
+    // start straight above the first sticker, so the vine never crosses the centred intro text (on phones: below it)
+    const pts = [[at(feats[0].querySelector('.node'))[0], mobile.matches ? at(runway.querySelector('.runway-head'), 0, 1)[1] + 10 : 0]], nodePts = [];
+    for (const f of feats) {
+      const n = at(f.querySelector('.node'));
+      pts.push(n); nodePts.push(n);
+    }
+    pts.push([mobile.matches ? pts[pts.length - 1][0] : box.width / 2, box.height]);
+    // Catmull-Rom through every point, so the vine curves through them without kinks
+    const P = i => pts[Math.max(0, Math.min(pts.length - 1, i))];
+    let d = `M${pts[0][0]} ${pts[0][1]}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [p0, p1, p2, p3] = [P(i - 1), P(i), P(i + 1), P(i + 2)];
+      d += `C${p1[0] + (p2[0] - p0[0]) / 6} ${p1[1] + (p2[1] - p0[1]) / 6} ${p2[0] - (p3[0] - p1[0]) / 6} ${p2[1] - (p3[1] - p1[1]) / 6} ${p2[0]} ${p2[1]}`;
+    }
+    allPaths.forEach(el => el.setAttribute('d', d));
+    const len = stem.getTotalLength();
+    growPaths.forEach(el => el.style.strokeDasharray = `${len} ${len}`);
+    // sample once; the path doubles back sideways through headings, so nodes are found by nearest point, not by height
+    const samples = [], STEP = 6;
+    for (let l = 0; l <= len; l += STEP) { const q = stem.getPointAtLength(l); samples.push([q.x, q.y]); }
+    const nodes = nodePts.map(([x, y]) => { let best = 0, bd = 1e9; samples.forEach(([sx, sy], k) => { const dd = (sx - x) ** 2 + (sy - y) ** 2; if (dd < bd) { bd = dd; best = k; } }); return best * STEP; });
+    leafGroup.replaceChildren();
+    const leaves = [];
+    let side = 1;
+    for (let l = 80; l < len - 40; l += 96) {
+      if (nodes.some(n => Math.abs(n - l) < 120)) continue;
+      const a = stem.getPointAtLength(l), b = stem.getPointAtLength(l + 2);
+      const ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI + side * 58;
+      const g = document.createElementNS(SVGNS, 'g');
+      g.setAttribute('transform', `translate(${a.x} ${a.y}) rotate(${ang})`);
+      const leaf = document.createElementNS(SVGNS, 'g'); leaf.setAttribute('class', 'leaf');
+      const blade = document.createElementNS(SVGNS, 'path'); blade.setAttribute('d', 'M4 0C14 -20 40 -22 58 0C40 22 14 20 4 0Z');
+      const rib = document.createElementNS(SVGNS, 'path'); rib.setAttribute('d', 'M6 0Q30 -3 50 0');
+      leaf.append(blade, rib); g.append(leaf); leafGroup.append(g);
+      leaves.push({ l, el: leaf });
+      side = -side;
+    }
+    vine = { len, height: box.height, nodes, leaves };
+  }
+
+  function vineFrame() {
+    if (!vine) return;
+    const box = runway.getBoundingClientRect();
+    // the tip grows in step with how far the reading line has travelled down the section
+    const drawn = clamp((innerHeight * .62 - box.top) / vine.height, 0, 1) * vine.len;
+    growPaths.forEach(el => el.style.strokeDashoffset = vine.len - drawn);
+    const pt = stem.getPointAtLength(drawn);
+    tip.setAttribute('cx', pt.x); tip.setAttribute('cy', pt.y);
+    tip.style.opacity = drawn > 2 && drawn < vine.len - 2 ? 1 : 0;
+    for (const lf of vine.leaves) lf.el.classList.toggle('on', drawn > lf.l);
+    vine.nodes.forEach((n, i) => {
+      const lit = drawn >= n - 4, f = feats[i];
+      if (lit && !f.classList.contains('lit')) f.querySelector('[data-sticker]')?.replay?.();
+      f.classList.toggle('lit', lit);
+    });
+  }
+
+  /* ---------- breath: one full sigh, played on arrival ---------- */
+  const breath = document.querySelector('.breath');
+  const bstage = breath.querySelector('.bstage');
+  const words = [...breath.querySelectorAll('.bw')];
+  const bSticker = breath.querySelector('[data-sticker]');
+  let breathTimers = [], breathing = false;
+  const say = n => words.forEach((w, i) => w.classList.toggle('on', i === n));
+  const orb = (o, dur) => { bstage.style.setProperty('--dur', dur + 's'); bstage.style.setProperty('--o', o); };
+  function resetBreath() {
+    breathTimers.forEach(clearTimeout); breathTimers = []; breathing = false;
+    bstage.classList.remove('done'); say(0); orb(.42, .4);
+  }
+  // resolves when the breath is over, so the stepper can hold the page until then
+  function playBreath() {
+    resetBreath();
+    breathing = true;
+    // the app's sigh: two breaths in through the nose, one long breath out
+    const steps = reduce
+      ? [[0, () => { say(4); bstage.classList.add('done'); }]]
+      : [[600, () => { say(1); orb(.86, 2.6); }],
+         [3300, () => { say(2); orb(1, 1); }],
+         [4500, () => { say(3); orb(.42, 5.5); bSticker.replay?.(); }],
+         [10200, () => { say(4); bstage.classList.add('done'); }]];
+    return new Promise(done => {
+      steps.forEach(([t, fn]) => breathTimers.push(setTimeout(fn, t)));
+      breathTimers.push(setTimeout(() => { breathing = false; done(); }, steps[steps.length - 1][0] + 300));
+    });
+  }
+
+  const get = document.querySelector('.get');
+  function getFrame() { if (get.getBoundingClientRect().top < innerHeight * .9) get.classList.add('lit'); }
+
+  let ticking = false;
+  // the background glows move slower than the page, for a little depth behind everything
+  const glows = document.querySelector('.glows');
+  const tucks = [...document.querySelectorAll('.tuck')];
+  const tuckFrame = () => tucks.forEach(el => el.classList.toggle('tucked', el.getBoundingClientRect().top < 88));
+  const frame = () => { ticking = false; storyFrame(); vineFrame(); getFrame(); tuckFrame(); if (!reduce) glows.style.transform = `translateY(${-Math.min(scrollY * .02, innerHeight * .2)}px)`; };
+  const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
+
+  /* ---------- stepper: one scroll moves exactly one stop, and each stop's animation gets to finish ---------- */
+  const docY = el => el.getBoundingClientRect().top + scrollY;
+  let stops = [];
+  function buildStops() {
+    const vh = innerHeight, sTop = docY(story), sTravel = story.offsetHeight - vh;
+    const centre = el => docY(el) + el.offsetHeight / 2 - vh / 2;
+    const maxY = document.documentElement.scrollHeight - vh;
+    const product = document.querySelector('.product');
+    const productStart = docY(product) - 80;
+    const productEnd = Math.max(productStart, docY(product) + product.offsetHeight - vh + 32);
+    // Each step lands just under the nav; long gaps (short screens, big text) get overlapping stops so no line is skipped.
+    const anchors = [productStart, ...[...product.querySelectorAll('.pstep')].map(el => docY(el) - 150)].filter((y, i, a) => i === 0 || y - a[i - 1] > 40);
+    if (productEnd - anchors[anchors.length - 1] > 40) anchors.push(productEnd);
+    const productStops = [], view = Math.max(1, vh - 96);
+    anchors.forEach((y, i) => {
+      if (i) for (let f = anchors[i - 1] + view * .75; y - f > view * .25; f += view * .75) productStops.push({ y: f });
+      productStops.push({ y });
+    });
+    // the three chapters sit in the middle of their share of the story's scroll
+    const chapter = k => sTop + sTravel * (.16 + .84 * (k + .5) / (SCREENS - 1));
+    stops = [
+      { y: 0 },
+      ...heads.map((_, k) => ({ y: chapter(k) })),
+      ...productStops,
+      { y: centre(runway.querySelector('.runway-head')) },
+      ...feats.map(f => ({ y: centre(f) })),
+      { y: docY(breath), breath: true },
+      { y: docY(get) },
+      { y: maxY },
+    ].map(s => ({ ...s, y: clamp(Math.round(s.y), 0, maxY) }))
+     .sort((a, b) => a.y - b.y)
+     .filter((s, i, a) => i === 0 || s.y - a[i - 1].y > 40);
+  }
+  const nearest = () => stops.reduce((best, s, i) => Math.abs(s.y - scrollY) < Math.abs(stops[best].y - scrollY) ? i : best, 0);
+  let moving = false, holding = false, lastInput = 0, glide = 0;
+  const easeIO = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  function go(i) {
+    i = clamp(i, 0, stops.length - 1);
+    const from = scrollY, to = stops[i].y;
+    if (stops[nearest()].breath && !stops[i].breath) resetBreath();
+    const arrive = () => {
+      moving = false;
+      if (stops[i].breath) { holding = true; playBreath().then(() => { holding = false; }); }
+    };
+    if (reduce || Math.abs(to - from) < 2) { scrollTo(0, to); arrive(); return; }
+    moving = true;
+    // slow and even: about a second per stop, longer for long jumps
+    const dur = clamp(900 + Math.abs(to - from) * .25, 900, 1500), t0 = performance.now();
+    cancelAnimationFrame(glide);
+    const stepFrame = now => {
+      const t = Math.min(1, (now - t0) / dur);
+      scrollTo(0, from + (to - from) * easeIO(t));
+      if (t < 1) glide = requestAnimationFrame(stepFrame); else arrive();
+    };
+    glide = requestAnimationFrame(stepFrame);
+  }
+  function step(dir) {
+    if (moving) return;
+    // during the breath only going back up is allowed; going on waits for the exhale to finish
+    if (holding && dir > 0) return;
+    if (holding) { holding = false; resetBreath(); }
+    const i = nearest();
+    // if the visitor dragged the scrollbar between stops, the first step settles on the nearest one
+    const off = stops[i].y - scrollY;
+    go(Math.abs(off) > 40 && Math.sign(off) === dir ? i : i + dir);
+  }
+  addEventListener('wheel', e => {
+    if (e.ctrlKey) return; // pinch zoom
+    e.preventDefault();
+    const now = performance.now(), quiet = now - lastInput > 220;
+    lastInput = now;
+    // a trackpad keeps sending a tail of wheel events after the swipe; only a fresh gesture counts as a new step
+    if (!quiet || Math.abs(e.deltaY) < 3) return;
+    step(Math.sign(e.deltaY));
+  }, { passive: false });
+  let touchY = null;
+  addEventListener('touchstart', e => { touchY = e.touches[0].clientY; }, { passive: true });
+  // one finger steps the page; two fingers stay free for pinch zoom
+  addEventListener('touchmove', e => { if (e.touches.length === 1 && !e.target.closest('[data-drag]')) e.preventDefault(); }, { passive: false });
+  addEventListener('touchend', e => {
+    if (touchY == null) return;
+    const dy = touchY - e.changedTouches[0].clientY; touchY = null;
+    if (Math.abs(dy) > 36) step(Math.sign(dy));
+  });
+  addEventListener('keydown', e => {
+    if (e.target.closest('input,textarea,select,[contenteditable]') || e.metaKey || e.altKey) return;
+    // Space on a focused button presses it instead of moving the page
+    if (e.key === ' ' && e.target.closest('button,a')) return;
+    const k = { ArrowDown: 1, PageDown: 1, ' ': e.shiftKey ? -1 : 1, ArrowUp: -1, PageUp: -1 }[e.key];
+    if (k) { e.preventDefault(); step(k); }
+    else if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); if (!moving && !holding) go(e.key === 'Home' ? 0 : stops.length - 1); }
+  });
+  document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (!target) return;
+    e.preventDefault();
+    if (holding) { holding = false; resetBreath(); }
+    const y = target.id === 'top' ? 0 : docY(target);
+    go(stops.reduce((best, s, i) => Math.abs(s.y - y) < Math.abs(stops[best].y - y) ? i : best, 0));
+  }));
+
+  const onResize = () => { measure(); buildVine(); buildStops(); frame(); };
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onResize);
+  document.fonts.ready.then(onResize);
+  onResize();
+  resetBreath();
+
+  /* ---------- sticker trail: the cursor leaves the app's stickers behind in the last section ----------
+     After the Shape Trail spec, slowed down: one sticker per 46px of travel instead of 8px, so it stays calm. */
+  {
+    const getSec = document.querySelector('.get');
+    const tcv = document.getElementById('trail'), tctx = tcv.getContext('2d');
+    const ART = ['air', 'phone', 'sparkle', 'ice', 'hearts', 'tea', 'sneaker', 'hourglass', 'moon', 'heart', 'plant', 'sun'].map(n => { const im = new Image(); im.src = `img/${n}.png`; return im; });
+    const MAX = 70, STEP = 46, LIFE = 2.4;
+    let TW = 0, TH = 0, items = [], lastArt = -1, prev = null, acc = 0, speed = 0, hovered = null, pulse = 1, pulseT = 1, burst = 5, burstTimer = 0, tLast = 0, tOn = false;
+    const pick = () => { let k; do k = Math.floor(Math.random() * ART.length); while (k === lastArt); return lastArt = k; };
+    const sizeAt = (x, y) => 44 + clamp((x / TW + (1 - y / TH)) / 2, 0, 1) * 34;
+    const spawn = (x, y, sz = sizeAt(x, y)) => {
+      if (items.length >= MAX || items.some(it => Math.hypot(it.x - x, it.y - y) < (it.s + sz) * .42)) return;
+      items.push({ x, y, s: sz, art: pick(), from: -1, morph: 1, rot: (Math.random() - .5) * .8, spin: (Math.random() - .5) * .8, life: 0 });
+    };
+    const swap = it => { it.from = it.art; it.art = pick(); it.morph = 0; it.life = LIFE * .07; it.spin = (Math.random() - .5) * .8; };
+    const tSize = () => {
+      const dpr = Math.min(devicePixelRatio || 1, 2), b = getSec.getBoundingClientRect();
+      TW = b.width; TH = b.height; tcv.width = TW * dpr; tcv.height = TH * dpr; tctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    const local = e => { const b = tcv.getBoundingClientRect(); return { x: e.clientX - b.left, y: e.clientY - b.top }; };
+    getSec.addEventListener('pointermove', e => {
+      if (reduce || e.pointerType !== 'mouse') return;
+      const m = local(e);
+      const over = items.find(it => Math.hypot(it.x - m.x, it.y - m.y) < it.s * .5);
+      if (over) { if (over !== hovered) swap(over); hovered = over; prev = m; return; }
+      hovered = null;
+      if (prev) {
+        const dx = m.x - prev.x, dy = m.y - prev.y, d = Math.hypot(dx, dy);
+        speed += (d - speed) * .25; acc += d;
+        while (acc >= STEP) { acc -= STEP; const k = 1 - acc / Math.max(d, 1); spawn(prev.x + dx * k, prev.y + dy * k); }
+      }
+      prev = m; wake();
+    });
+    getSec.addEventListener('pointerleave', () => { prev = null; hovered = null; });
+    getSec.addEventListener('pointerdown', e => {
+      if (reduce || e.target.closest('a,button,[data-drag]')) return;
+      const m = local(e);
+      burst = burstTimer > 0 ? Math.min(burst + 5, 20) : 5; burstTimer = 2;
+      pulseT = Math.min(1.35, pulseT + .12);
+      // rings of stickers around the tap: one in the middle, then rings spaced by sticker size
+      const sz = sizeAt(m.x, m.y), gap = sz * 1.5;
+      let made = 0, ringN = 0;
+      while (made < burst) {
+        if (ringN === 0) { spawn(m.x, m.y, sz); made++; }
+        else { const n = Math.floor(2 * Math.PI * ringN); for (let i = 0; i < n && made < burst; i++, made++) { const a = i / n * 6.283 + ringN; spawn(m.x + Math.cos(a) * ringN * gap, m.y + Math.sin(a) * ringN * gap, sz * (1 - ringN * .08)); } }
+        ringN++;
+      }
+      wake();
+    });
+    const tFrame = now => {
+      const dt = Math.min(.05, (now - (tLast || now)) / 1000); tLast = now;
+      tctx.clearRect(0, 0, TW, TH);
+      speed *= .9;
+      const decay = 1 + Math.min(1, speed / 45) * 1.5;
+      pulse += (pulseT - pulse) * Math.min(1, dt * 8); pulseT += (1 - pulseT) * Math.min(1, dt * 1.5);
+      burstTimer = Math.max(0, burstTimer - dt);
+      for (let i = items.length - 1; i >= 0; i--) {
+        const it = items[i];
+        it.rot += it.spin * dt; it.spin *= .997;
+        it.morph = Math.min(1, it.morph + dt * 2.2);
+        it.life += dt * decay;
+        const f = it.life / LIFE;
+        const sc = f < .06 ? f / .06 : f < .6 ? 1 : 1 - ((f - .6) / .4) ** 3;
+        // a new sticker starts at scale 0 while it pops in, so only a shrinking one counts as gone
+        if (f >= 1 || (f > .6 && sc < .01)) { items.splice(i, 1); continue; }
+        const mt = it.morph * it.morph * (3 - 2 * it.morph);
+        const dip = it.morph < 1 ? Math.abs(1 - 2 * mt) : 1;
+        const art = ART[it.morph < .5 && it.from >= 0 ? it.from : it.art];
+        const size = it.s * sc * pulse * (.75 + .25 * dip);
+        if (!art.complete || size < .5) continue;
+        tctx.save(); tctx.translate(it.x, it.y); tctx.rotate(it.rot);
+        tctx.drawImage(art, -size / 2, -size / 2, size, size);
+        tctx.restore();
+      }
+      if (items.length || pulse > 1.001) requestAnimationFrame(tFrame); else { tOn = false; tLast = 0; }
+    };
+    const wake = () => { if (!tOn) { tOn = true; requestAnimationFrame(tFrame); } };
+    tSize(); addEventListener('resize', tSize); document.fonts.ready.then(tSize);
+  }
+
+  /* ---------- big cursor ---------- */
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const cur = document.querySelector('.cur');
+    document.documentElement.classList.add('bigcur');
+    const HOT = 'a,button,[data-drag],.split,.packs button';
+    addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse') return;
+      // the arrow's tip sits on the real pointer position
+      cur.style.transform = `translate(${e.clientX - 7}px, ${e.clientY - 5}px)`;
+      cur.classList.add('on');
+      cur.classList.toggle('hot', !!e.target.closest?.(HOT));
+    }, { passive: true });
+    addEventListener('pointerdown', () => cur.classList.add('down'));
+    addEventListener('pointerup', () => cur.classList.remove('down'));
+    document.addEventListener('pointerleave', () => cur.classList.remove('on'));
+  }
+
+  /* ---------- themes: the app's four packs, an easter egg in the footer ---------- */
+  const packButtons = [...document.querySelectorAll('.packs button')];
+  const setPack = (name, save) => {
+    document.documentElement.dataset.pack = name;
+    packButtons.forEach(b => b.setAttribute('aria-pressed', b.dataset.pack === name));
+    if (save) try { localStorage.setItem('pause-pack', name); } catch {}
+    dispatchEvent(new CustomEvent('pause-theme', { detail: name }));
+  };
+  packButtons.forEach(b => b.addEventListener('click', () => setPack(b.dataset.pack, true)));
+  setPack(document.documentElement.dataset.pack || 'meadow', false);
+})();
+</script>
+<script defer src="stickers.js"></script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+  // a few named clicks for Vercel Analytics (custom events show up on plans that include them; elsewhere they are ignored)
+  document.addEventListener('click', e => {
+    const el = e.target.closest('a[href*="apps.apple.com"], nav .btn, [data-open], .packs button, a[href$="privacy/"], a[href$="terms/"]');
+    if (!el) return;
+    const name = el.matches('a[href*="apps.apple.com"]') ? 'App Store click'
+      : el.matches('nav .btn') ? 'Nav get the app'
+      : el.dataset.open ? 'Phone tile opened'
+      : el.dataset.pack ? 'Theme picked'
+      : 'Legal page opened';
+    window.va('event', { name, detail: el.dataset.open || el.dataset.pack || el.getAttribute('href') || '' });
+  });
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# Notes and sources stay in the repo; only the built site is published.
+*.md
+scrollcraft/
+stickers/
+.env*
+.vercel/
+_config.yml
+legacy/
