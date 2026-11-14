@@ -33,7 +33,11 @@
 [data-pack=lilac]{--accent:#8B7BF7;--accentText:#534A94;--highlight:#FFD66B;--tint:#E2DEFD;--ink:#17142E;--ink2:#25213F;--mute:#55516B}
 [data-pack=tide]{--accent:#29B3C9;--accentText:#196B79;--highlight:#FFE170;--tint:#CAECF2;--ink:#0C1A1F;--ink2:#1B2B31;--mute:#4A5A60}
 *{box-sizing:border-box;margin:0}
-html{overscroll-behavior:none}
+html{overscroll-behavior:none;scrollbar-color:var(--accent) var(--paper)}
+::-webkit-scrollbar{width:14px;height:14px}
+::-webkit-scrollbar-track{background:var(--paper)}
+::-webkit-scrollbar-thumb{background:var(--accent);border:3px solid var(--paper);border-radius:999px}
+::-webkit-scrollbar-thumb:hover{background:var(--accentText)}
 body{background:var(--paper);color:var(--ink);font-family:var(--body);font-weight:500;-webkit-font-smoothing:antialiased;overflow-x:clip;transition:background .6s,color .6s}
 img{display:block;max-width:100%}
 a{color:inherit}
@@ -59,10 +63,13 @@ p{text-wrap:pretty}
 @media (max-width:900px){.cta{justify-content:center;gap:8px}.cta .btn{padding:0 16px}}
 .btn svg{width:20px;height:20px;fill:currentColor}
 
-nav{position:fixed;top:14px;left:50%;translate:-50% 0;z-index:20;width:min(1080px,calc(100% - 32px));display:flex;align-items:center;justify-content:space-between;padding:7px 7px 7px 14px;border:2px solid var(--ink);border-radius:999px;background:color-mix(in srgb,var(--surface) 78%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+nav{position:fixed;top:14px;left:50%;translate:-50% 0;z-index:20;width:min(1080px,calc(100% - 32px));display:flex;align-items:center;justify-content:space-between;padding:7px 7px 7px 14px;border:2px solid var(--ink);border-radius:999px;background:color-mix(in srgb,var(--surface) 78%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:background .3s var(--ease),box-shadow .3s var(--ease)}
+nav.scrolled{width:min(360px,calc(100% - 48px));background:color-mix(in srgb,var(--surface) 95%,transparent);box-shadow:0 5px 0 var(--ink)}
+nav>a{flex-shrink:0;white-space:nowrap}
+@media(max-width:400px){nav.scrolled{width:calc(100% - 40px)}}
 .logo{display:flex;align-items:center;gap:10px;font:400 25px/1 var(--display);text-decoration:none}
 .logo img{width:32px;height:32px;border-radius:9px}
-nav .btn{min-height:42px;padding:0 18px;font-size:15px;box-shadow:0 3px 0 var(--ink)}
+nav .btn{min-height:44px;padding:0 18px;font-size:15px;box-shadow:0 3px 0 var(--ink)}
 
 /* entrance: slow rise out of a blur, staggered by --d */
 .rv{animation:rise 1.3s var(--ease) both;animation-delay:calc(var(--d,0) * 1s)}
@@ -487,6 +494,7 @@ footer{padding:0 24px 36px;text-align:center;font-size:13px;color:var(--mute);li
   .runway{padding-left:12px}
 }
 @media (prefers-reduced-motion:reduce){
+  nav{transition:none}nav.scrolled{transform:none}
   .rv,.w>span,.p3d,.ptilt,.pshadow,.inl,.c{animation:none!important}
   .stk{translate:none}
   .orb div{animation:none}
@@ -498,6 +506,7 @@ footer{padding:0 24px 36px;text-align:center;font-size:13px;color:var(--mute);li
 <div class="glows"></div>
 <div class="cur" aria-hidden="true"><svg viewBox="0 0 100 100"><path class="side" d="M14 10L14 84L33 66L46 94L60 88L48 61L74 61Z" transform="translate(4 6)"/><path d="M14 10L14 84L33 66L46 94L60 88L48 61L74 61Z"/></svg></div>
 
+<div id="nav-boundary" aria-hidden="true" style="position:absolute;top:64px;width:1px;height:1px;pointer-events:none"></div>
 <nav aria-label="Main">
   <a class="logo" href="#top"><img src="img/icon.png" alt="">Pause</a>
   <a class="btn" href="https://testflight.apple.com/join/aXHdD5cT">Join the beta</a>
@@ -1067,6 +1076,39 @@ footer{padding:0 24px 36px;text-align:center;font-size:13px;color:var(--mute);li
   const glows = document.querySelector('.glows');
   const tucks = [...document.querySelectorAll('.tuck')];
   const tuckFrame = () => tucks.forEach(el => el.classList.toggle('tucked', el.getBoundingClientRect().top < 88));
+  const nav = document.querySelector('nav');
+  const navLinks = [...nav.children];
+  const navReduce = matchMedia('(prefers-reduced-motion: reduce)');
+  let navAnimations = [];
+  const cancelNavMotion = () => { navAnimations.forEach(a => a.cancel()); navAnimations = []; };
+  function setNavCompact(compact) {
+    if (nav.classList.contains('scrolled') === compact) return;
+    const before = nav.getBoundingClientRect();
+    const linksBefore = navLinks.map(el => el.getBoundingClientRect());
+    cancelNavMotion();
+    nav.classList.toggle('scrolled', compact);
+    if (navReduce.matches) return;
+    const after = nav.getBoundingClientRect();
+    const linksAfter = navLinks.map(el => el.getBoundingClientRect());
+    // Change layout once; animate transforms and counter-scale the links to keep type crisp.
+    const frames = Array.from({ length: 41 }, (_, i) => {
+      const t = i / 40;
+      const p = i === 40 ? 1 : 1 - Math.exp(-9 * t) * (Math.cos(10 * t) + .9 * Math.sin(10 * t));
+      return { p, scale: (before.width + (after.width - before.width) * p) / after.width };
+    });
+    const timing = { duration: 650, easing: 'linear' };
+    navAnimations.push(nav.animate(frames.map(({ scale }) => ({ transform: `scaleX(${scale})` })), timing));
+    navLinks.forEach((el, i) => {
+      const from = linksBefore[i].x + linksBefore[i].width / 2 - (before.x + before.width / 2);
+      const to = linksAfter[i].x + linksAfter[i].width / 2 - (after.x + after.width / 2);
+      navAnimations.push(el.animate(frames.map(({ p, scale }) => ({
+        transform: `translateX(${(from + (to - from) * p) / scale - to}px) scaleX(${1 / scale})`
+      })), timing));
+    });
+  }
+  new IntersectionObserver(([entry]) => setNavCompact(entry.boundingClientRect.top < 0)).observe(document.getElementById('nav-boundary'));
+  addEventListener('resize', cancelNavMotion);
+  navReduce.addEventListener('change', cancelNavMotion);
   const frame = () => { ticking = false; storyFrame(); vineFrame(); getFrame(); tuckFrame(); if (!reduce) glows.style.transform = `translateY(${-Math.min(scrollY * .02, innerHeight * .2)}px)`; };
   const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
 
