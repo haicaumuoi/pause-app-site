@@ -69,7 +69,7 @@ nav .btn{min-height:42px;padding:0 18px;font-size:15px;box-shadow:0 3px 0 var(--
 @keyframes rise{from{opacity:0;translate:0 28px;scale:.96;filter:blur(8px)}}
 .w{display:inline-block;overflow:clip;overflow-clip-margin:.12em;vertical-align:top;padding-bottom:.06em}
 .w>span{display:inline-block;animation:word 1.4s var(--ease) both;animation-delay:calc(.25s + var(--i) * .09s)}
-@keyframes word{from{translate:0 105%;rotate:4deg;filter:blur(6px)}}
+@keyframes word{from{opacity:0;translate:0 105%;rotate:4deg}}
 /* text that plays back: words lift one after another on hover and squish when pressed; marked words get a highlighter
    swipe, and their letters wave like a breath */
 .split .h{display:inline-block;transition:transform .55s cubic-bezier(.34,1.56,.64,1);transition-delay:calc(var(--i) * .035s)}
@@ -150,7 +150,7 @@ footer a:not(.logo):hover,footer a:not(.logo):focus-visible{text-decoration-styl
 .bodies{left:calc(50% + var(--pw) / 2 + 70px)}
 .heads>*,.bodies>*{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;pointer-events:none}
 .heads h2{font-size:clamp(38px,4.6vw,64px)}
-.heads .w>span,.bodies .ln{animation:none;translate:0 105%;filter:blur(6px);transition:translate .9s var(--ease),filter .9s var(--ease),opacity .9s var(--ease)}
+.heads .w>span,.bodies .ln{animation:none;translate:0 105%;transition:translate .9s var(--ease),opacity .9s var(--ease)}
 .heads .w>span{transition-delay:calc(var(--i) * .06s)}
 .heads .w>span{opacity:0}
 .heads .on .w>span{translate:0 0;filter:none;opacity:1}
@@ -1104,7 +1104,9 @@ footer{padding:0 24px 36px;text-align:center;font-size:13px;color:var(--mute);li
      .filter((s, i, a) => i === 0 || s.y - a[i - 1].y > 40);
   }
   const nearest = () => stops.reduce((best, s, i) => Math.abs(s.y - scrollY) < Math.abs(stops[best].y - scrollY) ? i : best, 0);
-  let moving = false, holding = false, lastInput = 0, glide = 0;
+  const desktopScroll = () => matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(any-pointer: coarse)').matches;
+  let moving = false, holding = false, lastInput = -Infinity, glide = 0;
+  let wheelDistance = 0, wheelStepped = false;
   const easeIO = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   function go(i) {
     i = clamp(i, 0, stops.length - 1);
@@ -1137,24 +1139,22 @@ footer{padding:0 24px 36px;text-align:center;font-size:13px;color:var(--mute);li
     go(Math.abs(off) > 40 && Math.sign(off) === dir ? i : i + dir);
   }
   addEventListener('wheel', e => {
-    if (e.ctrlKey) return; // pinch zoom
+    if (!desktopScroll() || e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
     e.preventDefault();
-    const now = performance.now(), quiet = now - lastInput > 220;
+    const now = performance.now();
+    if (now - lastInput > 220 || Math.sign(e.deltaY) !== Math.sign(wheelDistance)) {
+      wheelDistance = 0; wheelStepped = false;
+    }
     lastInput = now;
-    // a trackpad keeps sending a tail of wheel events after the swipe; only a fresh gesture counts as a new step
-    if (!quiet || Math.abs(e.deltaY) < 3) return;
-    step(Math.sign(e.deltaY));
+    wheelDistance += e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1);
+    // Trackpads start with tiny deltas; accumulate them, then consume the momentum tail.
+    if (moving) { wheelStepped = true; return; }
+    if (wheelStepped || Math.abs(wheelDistance) < 3) return;
+    wheelStepped = true;
+    step(Math.sign(wheelDistance));
   }, { passive: false });
-  let touchY = null;
-  addEventListener('touchstart', e => { touchY = e.touches[0].clientY; }, { passive: true });
-  // one finger steps the page; two fingers stay free for pinch zoom
-  addEventListener('touchmove', e => { if (e.touches.length === 1 && !e.target.closest('[data-drag]')) e.preventDefault(); }, { passive: false });
-  addEventListener('touchend', e => {
-    if (touchY == null) return;
-    const dy = touchY - e.changedTouches[0].clientY; touchY = null;
-    if (Math.abs(dy) > 36) step(Math.sign(dy));
-  });
   addEventListener('keydown', e => {
+    if (!desktopScroll()) return;
     if (e.target.closest('input,textarea,select,[contenteditable]') || e.metaKey || e.altKey) return;
     // Space on a focused button presses it instead of moving the page
     if (e.key === ' ' && e.target.closest('button,a')) return;
@@ -1163,6 +1163,7 @@ footer{padding:0 24px 36px;text-align:center;font-size:13px;color:var(--mute);li
     else if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); if (!moving && !holding) go(e.key === 'Home' ? 0 : stops.length - 1); }
   });
   document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+    if (!desktopScroll()) return;
     const target = document.querySelector(a.getAttribute('href'));
     if (!target) return;
     e.preventDefault();
@@ -1177,6 +1178,12 @@ footer{padding:0 24px 36px;text-align:center;font-size:13px;color:var(--mute);li
   document.fonts.ready.then(onResize);
   onResize();
   resetBreath();
+  // Native touch scrolling still starts the breath on arrival, without holding the page.
+  new IntersectionObserver(([entry]) => {
+    if (desktopScroll()) return;
+    if (entry.intersectionRatio >= .6) { if (!breathing) playBreath(); }
+    else resetBreath();
+  }, { threshold: .6 }).observe(bstage);
 
   /* ---------- sticker trail: the cursor leaves the app's stickers behind in the last section ----------
      After the Shape Trail spec, slowed down: one sticker per 46px of travel instead of 8px, so it stays calm. */
